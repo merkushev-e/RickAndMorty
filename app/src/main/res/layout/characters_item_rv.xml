@@ -41,13 +41,36 @@
             android:id="@+id/characterName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="@dimen/marginStartTV"
             android:layout_marginTop="8dp"
-            android:layout_marginEnd="@dimen/marginStartEnd"
-            android:layout_marginBottom="@dimen/marginStartEnd"
             android:text="@{characterModel.name}"
             android:textColor="@color/black"
             tools:text="Name Character" />
+        <TextView
+            android:id="@+id/characterSpecies"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/marginStartTV"
+            android:text="@{characterModel.species}"
+            android:textColor="@color/black"
+            tools:text="Human" />
+        <TextView
+            android:id="@+id/characterGender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/marginStartTV"
+            android:text="@{characterModel.gender}"
+            android:textColor="@color/black"
+            tools:text="Male" />
+        <TextView
+            android:id="@+id/characterStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/marginStartTV"
+            android:layout_marginBottom="@dimen/marginStartEnd"
+            android:text="@{characterModel.status}"
+            android:textColor="@color/black"
+            tools:text="Alive" />
 
     </LinearLayout>
 

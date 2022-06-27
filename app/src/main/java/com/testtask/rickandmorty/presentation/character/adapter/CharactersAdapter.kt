@@ -32,7 +32,10 @@ class CharactersAdapter() :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: CharactersData) {
             with(binding) {
-                characterName.text = item.name
+                characterName.text =  item.name
+                characterStatus.text =  binding.root.context.getString(R.string.status) +  item.status
+                characterSpecies.text = binding.root.context.getString(R.string.species) + item.species
+                characterGender.text = binding.root.context.getString(R.string.gender) + item.gender
                 characterImage.load(item.image){
                     error(R.drawable.ic_load_error_vector)
                     placeholder(R.drawable.ic_no_photo_vector)
