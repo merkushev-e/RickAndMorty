@@ -54,6 +54,15 @@ class CharactersFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
+        initAdapter()
+        getData()
+        setupSwipeToRefresh()
+        observeLoadState(adapter)
+        handleListVisibility(adapter)
+    }
+
+    private fun initAdapter() {
+
         val tryAgainAction = { adapter.retry() }
         val footerAdapter = CharactersLoadStateAdapter(tryAgainAction)
         val adapterLoadState = adapter.withLoadStateFooter(footerAdapter)
@@ -87,10 +96,6 @@ class CharactersFragment : Fragment() {
             }
         }
 
-        getData()
-        setupSwipeToRefresh()
-        observeLoadState(adapter)
-        handleListVisibility(adapter)
     }
 
 

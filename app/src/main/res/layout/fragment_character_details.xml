@@ -176,10 +176,20 @@
             android:id="@+id/recyclerViewEpisode"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="50dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/episodesText" />
+            app:layout_constraintTop_toBottomOf="@id/episodesText"
+            tools:listitem="@layout/episoder_item_rv"/>
+
+        <include
+            android:id="@+id/loadStateView"
+            layout="@layout/load_state_messaage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/recyclerViewEpisode"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>

@@ -4,6 +4,7 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import com.testtask.rickandmorty.data.DataSource
 import com.testtask.rickandmorty.data.retrofit.model.CharacterDataDTO
 import com.testtask.rickandmorty.data.retrofit.model.CharactersResponseDTO
+import com.testtask.rickandmorty.data.retrofit.model.EpisodeDTO
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -37,10 +38,14 @@ class RemoteDataSource: DataSource<CharactersResponseDTO> {
     }
 
 
+    override suspend fun getEpisodeById(id: Int): EpisodeDTO {
+        return api.getEpisodeById(id)
+    }
+
+
     companion object {
         private const val BASE_URL_LOCATIONS = "https://rickandmortyapi.com/api/"
     }
-
 
 
 
