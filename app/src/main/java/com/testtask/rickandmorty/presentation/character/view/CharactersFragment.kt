@@ -1,7 +1,6 @@
-package com.testtask.rickandmorty.presentation.character
+package com.testtask.rickandmorty.presentation.character.view
 
 import android.os.Bundle
-import android.text.LoginFilter
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,8 +13,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.GridLayoutManager
 import com.testtask.rickandmorty.App
+import com.testtask.rickandmorty.R
 import com.testtask.rickandmorty.databinding.FragmentCharactersBinding
 import com.testtask.rickandmorty.domain.AppState
+import com.testtask.rickandmorty.presentation.character.adapter.CharactersAdapter
 import com.testtask.rickandmorty.presentation.character.adapter.CharactersLoadStateAdapter
 import com.testtask.rickandmorty.presentation.character.viewModel.CharactersViewModel
 import com.testtask.rickandmorty.utils.simpleScan
@@ -32,7 +33,6 @@ class CharactersFragment : Fragment() {
         CharactersAdapter()
     }
     private lateinit var charactersLoadStateHolder: CharactersLoadStateAdapter.ViewHolder
-
     private lateinit var viewModel: CharactersViewModel
 
 
@@ -53,6 +53,15 @@ class CharactersFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+        initAdapter()
+        getData()
+        setupSwipeToRefresh()
+        observeLoadState(adapter)
+        handleListVisibility(adapter)
+    }
+
+    private fun initAdapter() {
 
         val tryAgainAction = { adapter.retry() }
         val footerAdapter = CharactersLoadStateAdapter(tryAgainAction)
@@ -79,14 +88,14 @@ class CharactersFragment : Fragment() {
                 }
             }
             adapter.listener = CharactersAdapter.OnListItemClickListener {
-                TODO()
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.container, CharacterDetailsFragment.newInstance(Bundle().apply {
+                        putParcelable(CharacterDetailsFragment.CHARACTER_EXTRA, it)
+                    }))
+                    .commit()
             }
         }
 
-        getData()
-        setupSwipeToRefresh()
-        observeLoadState(adapter)
-        handleListVisibility(adapter)
     }
 
 
@@ -124,6 +133,7 @@ class CharactersFragment : Fragment() {
         when (appState) {
             is AppState.Success -> {
                 showViewSuccess(appState)
+                appState.data
             }
             is AppState.Error -> {
 
