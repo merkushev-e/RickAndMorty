@@ -1,4 +1,4 @@
-package com.testtask.rickandmorty.presentation.character
+package com.testtask.rickandmorty.presentation.character.view
 
 import android.os.Bundle
 import android.util.Log

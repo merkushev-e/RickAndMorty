@@ -1,8 +1,7 @@
-package com.testtask.rickandmorty.presentation.character
+package com.testtask.rickandmorty.presentation.character.view
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -14,19 +13,12 @@ import coil.load
 import coil.transform.CircleCropTransformation
 import com.testtask.rickandmorty.App
 import com.testtask.rickandmorty.R
-import com.testtask.rickandmorty.data.retrofit.model.Location
-import com.testtask.rickandmorty.data.retrofit.model.Origin
 import com.testtask.rickandmorty.databinding.FragmentCharacterDetailsBinding
-import com.testtask.rickandmorty.databinding.FragmentCharactersBinding
 import com.testtask.rickandmorty.domain.AppState
 import com.testtask.rickandmorty.domain.model.CharactersData
-import com.testtask.rickandmorty.domain.model.EpisodeData
-import com.testtask.rickandmorty.presentation.character.adapter.CharactersAdapter
 import com.testtask.rickandmorty.presentation.character.adapter.CharactersDetailsAdapter
 import com.testtask.rickandmorty.presentation.character.viewModel.CharacterDetailsViewModel
-import com.testtask.rickandmorty.presentation.character.viewModel.CharactersViewModel
-import kotlinx.android.synthetic.main.characters_item_rv.*
-import kotlinx.android.synthetic.main.fragment_character_details.view.*
+import java.lang.Error
 
 class CharacterDetailsFragment : Fragment() {
 
@@ -68,7 +60,15 @@ class CharacterDetailsFragment : Fragment() {
 
         initAdapter()
         getData()
+        initTryAgainButton()
 
+    }
+
+    private fun initTryAgainButton() {
+        binding.loadStateView.tryAgainButton.setOnClickListener {
+            stopRefreshAnimationIfNeeded()
+            getData()
+        }
     }
 
     private fun initAdapter() {
@@ -120,7 +120,7 @@ class CharacterDetailsFragment : Fragment() {
             }
             is AppState.Error -> {
                 stopRefreshAnimationIfNeeded()
-                showViewError()
+                appState.error.message?.let { showViewError(it) }
             }
             else -> {}
         }
@@ -143,11 +143,13 @@ class CharacterDetailsFragment : Fragment() {
     }
 
 
-    private fun showViewError() {
+    private fun showViewError(error: String) {
         binding.recyclerViewEpisode.visibility = View.GONE
         binding.loadStateView.progressBar.visibility = View.GONE
         binding.loadStateView.messageTextView.visibility = View.VISIBLE
         binding.loadStateView.tryAgainButton.visibility = View.VISIBLE
+        binding.loadStateView.messageTextView.text =  error
+
     }
 
 

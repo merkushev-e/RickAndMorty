@@ -44,7 +44,7 @@ class CharacterDetailsViewModel @Inject constructor(
         }
 
     private fun handleError(error: Throwable) {
-        liveDataToObserve.value = AppState.Error(error)
+        liveDataToObserve.postValue(AppState.Error(error))
     }
 
 }
