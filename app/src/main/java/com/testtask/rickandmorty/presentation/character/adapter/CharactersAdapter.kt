@@ -1,7 +1,6 @@
-package com.testtask.rickandmorty.presentation.character
+package com.testtask.rickandmorty.presentation.character.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
@@ -10,12 +9,12 @@ import coil.load
 import com.testtask.rickandmorty.R
 import com.testtask.rickandmorty.databinding.CharactersItemRvBinding
 import com.testtask.rickandmorty.domain.model.CharactersData
-import com.testtask.rickandmorty.presentation.character.viewModel.CharactersViewModel
 
 class CharactersAdapter() :
     PagingDataAdapter<CharactersData, CharactersAdapter.CharactersViewHolder>(DiffUtilCallBack()) {
-    var listener: OnListItemClickListener? = null
 
+
+    var listener: OnListItemClickListener? = null
 
     override fun onBindViewHolder(holder: CharactersViewHolder, position: Int) {
         getItem(position)?.let { holder.bind(it) }
@@ -28,7 +27,7 @@ class CharactersAdapter() :
         )
     }
 
-    class CharactersViewHolder(private val binding: CharactersItemRvBinding) :
+    inner class CharactersViewHolder(private val binding: CharactersItemRvBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: CharactersData) {
             with(binding) {
@@ -39,6 +38,9 @@ class CharactersAdapter() :
                 characterImage.load(item.image){
                     error(R.drawable.ic_load_error_vector)
                     placeholder(R.drawable.ic_no_photo_vector)
+                }
+                recyclerItem.setOnClickListener {
+                    listener?.onClick(item)
                 }
             }
         }

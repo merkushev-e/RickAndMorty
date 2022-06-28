@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:isScrollContainer="true"
+    android:scrollIndicators="right">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/characterImage"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
+            android:layout_marginHorizontal="12dp"
+            android:layout_marginTop="8dp"
+            android:elevation="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/avatars" />
+
+        <LinearLayout
+            android:id="@+id/characterInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="16dp"
+            android:orientation="vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/characterImage">
+
+            <TextView
+                android:id="@+id/characterName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="@string/Name"
+                android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+                android:textColor="@color/grey" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="4dp"
+                android:text="@string/speciesDetails"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/characterSpecies"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:text="@{viewModel.state.character.gender}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="#6E798C"
+                tools:text="Human" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="4dp"
+                android:text="@string/statusDetails"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/characterStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:text="@{viewModel.state.character.gender}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="#6E798C"
+                tools:text="Alive" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingBottom="4dp"
+                android:text="@string/genderDetails"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/characterGender"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:text="@{viewModel.state.character.gender}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="#6E798C"
+                tools:text="Male" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:paddingBottom="4dp"
+                android:text="@string/origin"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/characterOrigin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                android:textColor="#6E798C"
+                tools:text="Earth (C-137)" />
+
+            <LinearLayout
+                android:id="@+id/locationGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/location"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:paddingBottom="4dp"
+                    android:text="@string/location"
+                    android:textColor="@color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/characterLocation"
+                    android:layout_width="355dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                    android:textColor="#6E798C"
+                    tools:text="Earth (Replacement Dimension)" />
+
+            </LinearLayout>
+
+
+            <View
+                android:id="@+id/divider4"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/grey" />
+
+
+        </LinearLayout>
+
+
+        <TextView
+            android:id="@+id/episodesText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="32dp"
+            android:text="@string/episodes"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/characterInfo" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewEpisode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="50dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/episodesText" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>

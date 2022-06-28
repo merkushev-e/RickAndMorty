@@ -2,6 +2,7 @@ package com.testtask.rickandmorty.di
 
 import androidx.lifecycle.ViewModel
 import com.testtask.rickandmorty.data.repositories.RepositoryImpl
+import com.testtask.rickandmorty.presentation.character.viewModel.CharacterDetailsViewModel
 import com.testtask.rickandmorty.presentation.character.viewModel.CharactersViewModel
 import dagger.MapKey
 import dagger.Module
@@ -16,6 +17,13 @@ class ViewModelModule {
     @Provides
     fun provideCharactersViewModel(repository: RepositoryImpl): ViewModel {
         return CharactersViewModel(repository)
+    }
+
+    @IntoMap
+    @ViewModelKey(CharacterDetailsViewModel::class)
+    @Provides
+    fun provideCharactersDetailsViewModel(repository: RepositoryImpl): ViewModel {
+        return CharacterDetailsViewModel(repository)
     }
 }
 

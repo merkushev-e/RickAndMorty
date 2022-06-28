@@ -10,4 +10,10 @@
     <string name="species">"Species: "</string>
     <string name="gender">"Gender: "</string>
     <string name="status">"Status: "</string>
+    <string name="Name">Morty Smith</string>
+    <string name="location">Location</string>
+    <string name="genderDetails">Gender</string>
+    <string name="origin">Origin</string>
+    <string name="statusDetails">Status</string>
+    <string name="speciesDetails">Species</string>
 </resources>

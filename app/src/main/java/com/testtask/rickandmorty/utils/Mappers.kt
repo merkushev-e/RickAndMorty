@@ -8,8 +8,7 @@ import com.testtask.rickandmorty.di.AppComponent
 import com.testtask.rickandmorty.domain.model.CharactersData
 
 
-fun Fragment.getAppComponent(): AppComponent =
-    (requireContext() as App).component
+
 
 internal fun CharacterDataDTO.toCharactersData():  CharactersData{
     return CharactersData(
@@ -18,12 +17,13 @@ internal fun CharacterDataDTO.toCharactersData():  CharactersData{
         gender = gender,
         id = id,
         image = image,
-        location = location,
+        location = CharactersData.Location(location.name,location.url),
         name = name,
-        origin = origin,
+        origin = CharactersData.Origin(origin.name,origin.url),
         species = species,
         status = status,
         type = type,
         url = url
     )
 }
+
