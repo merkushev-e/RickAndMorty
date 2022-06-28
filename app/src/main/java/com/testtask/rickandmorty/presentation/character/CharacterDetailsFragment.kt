@@ -61,6 +61,11 @@ class CharacterDetailsFragment : Fragment() {
             character = arguments?.getParcelable(CHARACTER_EXTRA) ?: CharactersData(location = CharactersData.Location(), origin = CharactersData.Origin())
             showInfo(character)
 
+       binding.swipeRefreshLayout.setOnRefreshListener {
+           getData()
+           stopRefreshAnimationIfNeeded()
+        }
+
         initAdapter()
         getData()
 
@@ -105,13 +110,16 @@ class CharacterDetailsFragment : Fragment() {
     private fun renderData(appState: AppState) {
         when (appState) {
             is AppState.SuccessDetails -> {
+                stopRefreshAnimationIfNeeded()
                 adapter.setData(appState.data)
                 showViewSuccess()
             }
             is AppState.Loading ->{
+                stopRefreshAnimationIfNeeded()
                 showViewLoading()
             }
             is AppState.Error -> {
+                stopRefreshAnimationIfNeeded()
                 showViewError()
             }
             else -> {}
@@ -143,7 +151,11 @@ class CharacterDetailsFragment : Fragment() {
     }
 
 
-
+    private fun stopRefreshAnimationIfNeeded() {
+        if (binding.swipeRefreshLayout.isRefreshing) {
+            binding.swipeRefreshLayout.isRefreshing = false
+        }
+    }
 
     companion object {
         const val CHARACTER_EXTRA = "Character"
