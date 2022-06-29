@@ -33,6 +33,9 @@ class EpisodesAdapter :
                 episodeName.text = item.episode
                 episodeDate.text = item.air_date
                 episodesPilot.text = item.name
+                episodesItem.setOnClickListener {
+                    listener?.onClick(item)
+                }
             }
         }
 

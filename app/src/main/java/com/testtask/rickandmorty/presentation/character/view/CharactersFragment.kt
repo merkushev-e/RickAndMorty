@@ -79,12 +79,11 @@ class CharactersFragment : Fragment() {
             charactersRV.layoutManager = GridLayoutManager(requireContext(), 2).apply {
                 spanSizeLookup = object : GridLayoutManager.SpanSizeLookup(){
                     override fun getSpanSize(position: Int): Int {
-                        Log.d("TAGG",adapter.itemCount.toString())
                         return if (adapter.itemCount - 10  == position-2) {
                             Log.d("TAGG", "position in $position")
-                            return 2
+                            2
                         } else{
-                            return 1
+                            1
                         }
                     }
                 }

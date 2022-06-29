@@ -1,4 +1,4 @@
-package com.testtask.rickandmorty.presentation.character.view
+package com.testtask.rickandmorty.presentation.episodes.view
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
@@ -17,28 +17,30 @@ import com.testtask.rickandmorty.databinding.FragmentCharacterDetailsBinding
 import com.testtask.rickandmorty.databinding.FragmentEpisodeDetailBinding
 import com.testtask.rickandmorty.domain.AppState
 import com.testtask.rickandmorty.domain.model.CharactersData
+import com.testtask.rickandmorty.domain.model.EpisodeData
 import com.testtask.rickandmorty.presentation.character.adapter.CharactersDetailsAdapter
+import com.testtask.rickandmorty.presentation.character.view.CharacterDetailsFragment
 import com.testtask.rickandmorty.presentation.character.viewModel.CharacterDetailsViewModel
-import com.testtask.rickandmorty.presentation.episodes.view.EpisodeDetailFragment
-import java.lang.Error
+import com.testtask.rickandmorty.presentation.episodes.adapter.EpisodeDetailsAdapter
+import com.testtask.rickandmorty.presentation.episodes.viewmodel.EpisodeDetailViewModel
+import kotlinx.android.synthetic.main.fragment_episode_detail.*
 
-class CharacterDetailsFragment : Fragment() {
+class EpisodeDetailFragment : Fragment() {
 
-    private lateinit var viewModel: CharacterDetailsViewModel
+    private lateinit var viewModel: EpisodeDetailViewModel
 
-    private var _binding: FragmentCharacterDetailsBinding? = null
+    private var _binding: FragmentEpisodeDetailBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var character: CharactersData
-    private val adapter: CharactersDetailsAdapter by lazy {
-        CharactersDetailsAdapter()
+    private lateinit var episode: EpisodeData
+    private val adapter: EpisodeDetailsAdapter by lazy {
+        EpisodeDetailsAdapter()
     }
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val viewModelFactory = App.instance.component.getViewModelFactory()
-        viewModel = ViewModelProvider(this, viewModelFactory)[CharacterDetailsViewModel::class.java]
+        viewModel = ViewModelProvider(this, viewModelFactory)[EpisodeDetailViewModel::class.java]
     }
 
 
@@ -46,17 +48,14 @@ class CharacterDetailsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentCharacterDetailsBinding.inflate(inflater, container, false)
+        _binding = FragmentEpisodeDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        character = arguments?.getParcelable(CHARACTER_EXTRA) ?: CharactersData(
-            location = CharactersData.Location(),
-            origin = CharactersData.Origin()
-        )
-        showInfo(character)
+        episode = arguments?.getParcelable(EpisodeDetailFragment.EPISODE_EXTRA) ?: EpisodeData()
+        showInfo(episode)
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             getData()
@@ -66,67 +65,50 @@ class CharacterDetailsFragment : Fragment() {
         initAdapter()
         getData()
         initTryAgainButton()
-
     }
 
-    private fun initTryAgainButton() {
-        binding.loadStateView.tryAgainButton.setOnClickListener {
-            stopRefreshAnimationIfNeeded()
-            getData()
-        }
-    }
+    private fun showInfo(episodeData: EpisodeData) {
 
-    private fun initAdapter() {
         with(binding) {
-            recyclerViewEpisode.adapter = adapter
-            recyclerViewEpisode.layoutManager =
-                LinearLayoutManager(requireContext(), RecyclerView.VERTICAL, false)
+            episodeDate.text = episodeData.air_date
+            episodeName.text = episodeData.name
+            episode.text = episodeData.episode
         }
-        adapter.listener = CharactersDetailsAdapter.OnListItemClickListener { data ->
-            requireActivity().supportFragmentManager
-                .beginTransaction()
-                .replace(R.id.container, EpisodeDetailFragment.newInstance(Bundle().apply {
-                    putParcelable(
-                        EpisodeDetailFragment.EPISODE_EXTRA,
-                        data
-                    )
-                }))
-                .commit()
-        }
-    }
 
-    private fun showInfo(character: CharactersData) {
-        with(binding) {
-            characterGender.text = character.gender
-            characterName.text = character.name
-            characterSpecies.text = character.species
-            characterImage.load(character.image) {
-                error(R.drawable.ic_load_error_vector)
-                placeholder(R.drawable.ic_no_photo_vector)
-                transformations(CircleCropTransformation())
-                build()
-            }
-            characterOrigin.text = character.origin.name
-            characterStatus.text = character.status
-            characterLocation.text = character.location.name
-            characterLocation.setOnClickListener {
-//                requireActivity().supportFragmentManager.beginTransaction()
-//                    .replace(R.id.container,)
-            }
-        }
     }
 
 
     private fun getData() {
-        viewModel.getEpisodesList(character)
+        viewModel.getEpisodesList(episode)
         viewModel.liveData.observe(viewLifecycleOwner) { appState ->
             renderData(appState)
         }
     }
 
+    private fun initAdapter() {
+        with(binding) {
+            recyclerViewCharacters.adapter = adapter
+            recyclerViewCharacters.layoutManager = GridLayoutManager(requireContext(), 2)
+        }
+        adapter.listener = EpisodeDetailsAdapter.OnListItemClickListener { data ->
+            requireActivity().supportFragmentManager
+                .beginTransaction()
+                .replace(
+                    R.id.container,
+                    CharacterDetailsFragment.newInstance(Bundle().apply {
+                        putParcelable(
+                            CharacterDetailsFragment.CHARACTER_EXTRA,
+                            data
+                        )
+                    })
+                )
+                .commit()
+        }
+    }
+
     private fun renderData(appState: AppState) {
         when (appState) {
-            is AppState.SuccessDetails -> {
+            is AppState.SuccessDetailsCharacter -> {
                 stopRefreshAnimationIfNeeded()
                 adapter.setData(appState.data)
                 showViewSuccess()
@@ -146,14 +128,14 @@ class CharacterDetailsFragment : Fragment() {
 
 
     private fun showViewSuccess() {
-        binding.recyclerViewEpisode.visibility = View.VISIBLE
+        binding.recyclerViewCharacters.visibility = View.VISIBLE
         binding.loadStateView.progressBar.visibility = View.GONE
         binding.loadStateView.messageTextView.visibility = View.GONE
         binding.loadStateView.tryAgainButton.visibility = View.GONE
     }
 
     private fun showViewLoading() {
-        binding.recyclerViewEpisode.visibility = View.GONE
+        binding.recyclerViewCharacters.visibility = View.GONE
         binding.loadStateView.progressBar.visibility = View.VISIBLE
         binding.loadStateView.messageTextView.visibility = View.GONE
         binding.loadStateView.tryAgainButton.visibility = View.GONE
@@ -161,7 +143,7 @@ class CharacterDetailsFragment : Fragment() {
 
 
     private fun showViewError(error: String) {
-        binding.recyclerViewEpisode.visibility = View.GONE
+        binding.recyclerViewCharacters.visibility = View.GONE
         binding.loadStateView.progressBar.visibility = View.GONE
         binding.loadStateView.messageTextView.visibility = View.VISIBLE
         binding.loadStateView.tryAgainButton.visibility = View.VISIBLE
@@ -170,17 +152,24 @@ class CharacterDetailsFragment : Fragment() {
     }
 
 
+    private fun initTryAgainButton() {
+        binding.loadStateView.tryAgainButton.setOnClickListener {
+            stopRefreshAnimationIfNeeded()
+            getData()
+        }
+    }
+
     private fun stopRefreshAnimationIfNeeded() {
         if (binding.swipeRefreshLayout.isRefreshing) {
             binding.swipeRefreshLayout.isRefreshing = false
         }
     }
 
+
     companion object {
-        const val CHARACTER_EXTRA = "Character"
-        fun newInstance(bundle: Bundle) = CharacterDetailsFragment().apply {
+        const val EPISODE_EXTRA = "Episode"
+        fun newInstance(bundle: Bundle) = EpisodeDetailFragment().apply {
             arguments = bundle
         }
     }
-
 }

@@ -4,7 +4,7 @@ import android.content.Context
 import com.testtask.rickandmorty.presentation.MainActivity
 import com.testtask.rickandmorty.presentation.character.view.CharacterDetailsFragment
 import com.testtask.rickandmorty.presentation.character.view.CharactersFragment
-import com.testtask.rickandmorty.presentation.episodes.EpisodesFragment
+import com.testtask.rickandmorty.presentation.episodes.view.EpisodesFragment
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton

@@ -1,63 +1,48 @@
-package com.testtask.rickandmorty.presentation.episodes
+package com.testtask.rickandmorty.presentation.episodes.viewmodel
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagingData
-import androidx.paging.cachedIn
 import com.testtask.rickandmorty.data.repositories.RepositoryImpl
 import com.testtask.rickandmorty.domain.AppState
 import com.testtask.rickandmorty.domain.model.CharactersData
 import com.testtask.rickandmorty.domain.model.EpisodeData
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-class EpisodesViewModel @Inject constructor(
+class EpisodeDetailViewModel  @Inject constructor(
     private val repository: RepositoryImpl
-) : ViewModel(){
+) : ViewModel() {
 
     private var liveDataToObserve: MutableLiveData<AppState> = MutableLiveData()
     var liveData: LiveData<AppState> = liveDataToObserve
+    private val resultList = mutableListOf<CharactersData>()
+
+
+    fun getEpisodesList(episodeData: EpisodeData) {
+        liveDataToObserve.value = AppState.Loading(null)
+        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
+
+            episodeData.characters.forEach {
+                val episodeId = it.split("/")[5].toInt()
+                resultList.add(repository.getCharacterDetails(episodeId))
+            }
+            liveDataToObserve.postValue(AppState.SuccessDetailsCharacter(resultList))
+        }
+
+    }
+
 
     private val coroutineExceptionHandler =
         CoroutineExceptionHandler { coroutineContext, throwable ->
             handleError(throwable)
         }
 
-
-    init {
-//        liveData = getListData().cachedIn(viewModelScope).map { AppState.Success(it) }.asLiveData(viewModelScope.coroutineContext)
-        getData()
-    }
-
-
-    fun getData() {
-        liveDataToObserve.value = AppState.Loading(null)
-        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            getListData().cachedIn(viewModelScope).collect {
-                liveDataToObserve.postValue(AppState.Success(it))
-            }
-        }
-
-
-    }
-
-    private fun getListData(): Flow<PagingData<EpisodeData>> {
-        return repository.getAllEpisode()
-    }
-
-
-    fun refresh() {
-        getData()
-    }
-
     private fun handleError(error: Throwable) {
-        liveDataToObserve.value = AppState.Error(error)
+        liveDataToObserve.postValue(AppState.Error(error))
     }
-
 
 }

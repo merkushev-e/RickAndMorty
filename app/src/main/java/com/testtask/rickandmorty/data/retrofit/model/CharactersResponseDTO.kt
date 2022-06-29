@@ -1,5 +1,7 @@
 package com.testtask.rickandmorty.data.retrofit.model
 
+import android.os.Parcelable
+import kotlinx.android.parcel.Parcelize
 
 
 data class CharactersResponseDTO(

@@ -1,8 +1,7 @@
-package com.testtask.rickandmorty.presentation.episodes
+package com.testtask.rickandmorty.presentation.episodes.view
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,15 +14,11 @@ import androidx.paging.PagingData
 import androidx.recyclerview.widget.GridLayoutManager
 import com.testtask.rickandmorty.App
 import com.testtask.rickandmorty.R
-import com.testtask.rickandmorty.databinding.FragmentCharactersBinding
 import com.testtask.rickandmorty.databinding.FragmentEpisodesBinding
 import com.testtask.rickandmorty.domain.AppState
-import com.testtask.rickandmorty.domain.model.CharactersData
 import com.testtask.rickandmorty.domain.model.EpisodeData
-import com.testtask.rickandmorty.presentation.character.adapter.CharactersAdapter
 import com.testtask.rickandmorty.presentation.character.adapter.CharactersLoadStateAdapter
-import com.testtask.rickandmorty.presentation.character.view.CharacterDetailsFragment
-import com.testtask.rickandmorty.presentation.character.viewModel.CharactersViewModel
+import com.testtask.rickandmorty.presentation.episodes.viewmodel.EpisodesViewModel
 import com.testtask.rickandmorty.presentation.episodes.adapter.EpisodesAdapter
 import com.testtask.rickandmorty.utils.simpleScan
 import kotlinx.coroutines.flow.Flow
@@ -81,14 +76,13 @@ class EpisodesFragment : Fragment() {
 
         with(binding) {
             episodesRv.adapter = adapterLoadState
-            episodesRv.layoutManager = GridLayoutManager(requireContext(), 2).apply {
-            }
+            episodesRv.layoutManager = GridLayoutManager(requireContext(), 2)
             adapter.listener = EpisodesAdapter.OnListItemClickListener {
-//                parentFragmentManager.beginTransaction()
-//                    .replace(R.id.container, CharacterDetailsFragment.newInstance(Bundle().apply {
-//                        putParcelable(CharacterDetailsFragment.CHARACTER_EXTRA, it)
-//                    }))
-//                    .commit()
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.container, EpisodeDetailFragment.newInstance(Bundle().apply {
+                        putParcelable(EpisodeDetailFragment.EPISODE_EXTRA, it)
+                    }))
+                    .commit()
             }
         }
 
