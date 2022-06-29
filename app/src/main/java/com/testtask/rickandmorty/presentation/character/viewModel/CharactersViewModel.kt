@@ -45,7 +45,7 @@ class CharactersViewModel @Inject constructor(
     }
 
     private fun getListData(): Flow<PagingData<CharactersData>> {
-        return repository.getData()
+        return repository.getCharactersByPage()
     }
 
 

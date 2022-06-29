@@ -11,11 +11,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.recyclerview.widget.GridLayoutManager
 import com.testtask.rickandmorty.App
 import com.testtask.rickandmorty.R
 import com.testtask.rickandmorty.databinding.FragmentCharactersBinding
 import com.testtask.rickandmorty.domain.AppState
+import com.testtask.rickandmorty.domain.model.CharactersData
 import com.testtask.rickandmorty.presentation.character.adapter.CharactersAdapter
 import com.testtask.rickandmorty.presentation.character.adapter.CharactersLoadStateAdapter
 import com.testtask.rickandmorty.presentation.character.viewModel.CharactersViewModel
@@ -131,8 +133,8 @@ class CharactersFragment : Fragment() {
 
     private fun renderData(appState: AppState) {
         when (appState) {
-            is AppState.Success -> {
-                showViewSuccess(appState)
+            is AppState.Success<*> -> {
+                showViewSuccess(appState as AppState.Success<PagingData<CharactersData>>)
                 appState.data
             }
             is AppState.Error -> {
@@ -145,11 +147,11 @@ class CharactersFragment : Fragment() {
     }
 
     private fun showErrorScreen(message: String?) {
-        Toast.makeText(requireActivity(),"Cannot load data", Toast.LENGTH_LONG).show()
+        Toast.makeText(requireActivity(),"Cannot load data", Toast.LENGTH_SHORT).show()
     }
 
 
-    private fun showViewSuccess(appState: AppState.Success) {
+    private fun showViewSuccess(appState: AppState.Success<PagingData<CharactersData>>) {
         viewLifecycleOwner.lifecycleScope.launch {
             appState.data?.let { adapter.submitData(it) }
         }

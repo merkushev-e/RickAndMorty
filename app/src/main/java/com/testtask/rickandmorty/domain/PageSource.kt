@@ -1,18 +1,19 @@
-package com.testtask.rickandmorty.data
+package com.testtask.rickandmorty.domain
 
 import android.net.Uri
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.testtask.rickandmorty.data.retrofit.RMApi
-import com.testtask.rickandmorty.data.retrofit.RemoteDataSource
+import com.testtask.rickandmorty.data.DataSource
+import com.testtask.rickandmorty.data.retrofit.model.CharacterDataDTO
 import com.testtask.rickandmorty.data.retrofit.model.CharactersResponseDTO
+import com.testtask.rickandmorty.data.retrofit.model.EpisodeDTO
+import com.testtask.rickandmorty.data.retrofit.model.EpisodesResultDTO
 import com.testtask.rickandmorty.domain.model.CharactersData
 import com.testtask.rickandmorty.utils.toCharactersData
-import retrofit2.HttpException
 
 
 class PageSource(
-    private val remoteDataSource: DataSource<CharactersResponseDTO>
+    private val remoteDataSource: DataSource<CharactersResponseDTO, CharacterDataDTO, EpisodesResultDTO, EpisodeDTO>
 ) : PagingSource<Int, CharactersData>() {
     override fun getRefreshKey(state: PagingState<Int, CharactersData>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
@@ -27,7 +28,7 @@ class PageSource(
         try {
             val page: Int = params.key ?: 1
 
-            val response = remoteDataSource.getData(page)
+            val response = remoteDataSource.getCharactersByPages(page)
             var nextKey: Int? = null
             if (response.info.next != null) {
                 val uri = Uri.parse(response.info.next)
