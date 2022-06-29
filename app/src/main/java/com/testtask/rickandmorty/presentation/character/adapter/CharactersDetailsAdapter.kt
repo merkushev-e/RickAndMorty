@@ -6,10 +6,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.testtask.rickandmorty.databinding.EpisoderItemRvBinding
 
 import com.testtask.rickandmorty.domain.model.EpisodeData
+import com.testtask.rickandmorty.presentation.episodes.adapter.EpisodesAdapter
 
 class CharactersDetailsAdapter :
     RecyclerView.Adapter<CharactersDetailsAdapter.CharacterDetailsEpisodesViewHolder>() {
     private var episodes: List<EpisodeData> = listOf()
+
+    var listener: OnListItemClickListener? = null
 
     fun setData(data: List<EpisodeData>){
         episodes = data
@@ -41,9 +44,15 @@ class CharactersDetailsAdapter :
                 episodeName.text = item.episode
                 episodeDate.text = item.air_date
                 episodesPilot.text = item.name
-
+                episodesItem.setOnClickListener {
+                    listener?.onClick(item)
+                }
             }
         }
+    }
+
+    fun interface OnListItemClickListener {
+        fun onClick(item: EpisodeData)
     }
 
 

@@ -2,4 +2,5 @@
 <resources>
     <dimen name="marginStartEnd">16dp</dimen>
     <dimen name="marginStartTV">12dp</dimen>
+    <dimen name="textSizeDefault">16sp</dimen>
 </resources>

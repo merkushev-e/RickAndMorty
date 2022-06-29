@@ -4,6 +4,7 @@ import android.content.Context
 import com.testtask.rickandmorty.presentation.MainActivity
 import com.testtask.rickandmorty.presentation.character.view.CharacterDetailsFragment
 import com.testtask.rickandmorty.presentation.character.view.CharactersFragment
+import com.testtask.rickandmorty.presentation.episodes.view.EpisodesFragment
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -32,4 +33,6 @@ interface AppComponent {
     fun inject(mainActivity: MainActivity)
     fun inject(charactersFragment: CharactersFragment)
     fun inject(characterDetailsFragment: CharacterDetailsFragment)
+    fun inject(episodesFragment: EpisodesFragment)
+
 }

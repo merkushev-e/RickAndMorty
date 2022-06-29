@@ -39,7 +39,8 @@ class CharactersAdapter() :
                     error(R.drawable.ic_load_error_vector)
                     placeholder(R.drawable.ic_no_photo_vector)
                 }
-                recyclerItem.setOnClickListener {
+
+                charactersItem.setOnClickListener {
                     listener?.onClick(item)
                 }
             }
