@@ -6,6 +6,7 @@ import com.testtask.rickandmorty.data.retrofit.model.EpisodesResultDTO
 import com.testtask.rickandmorty.domain.model.CharactersData
 import com.testtask.rickandmorty.domain.model.EpisodeData
 import com.testtask.rickandmorty.domain.model.EpisodesResultData
+import com.testtask.rickandmorty.domain.model.LocationData
 import kotlinx.coroutines.flow.Flow
 
 
@@ -15,6 +16,8 @@ interface Repository{
      suspend fun getCharacterDetails(id: Int): CharactersData
      suspend fun getEpisodeById(id: Int): EpisodeData
      fun getAllEpisode(): Flow<PagingData<EpisodeData>>
+     fun getAllLocations(): Flow<PagingData<LocationData>>
+     suspend fun getLocationById(id: Int): LocationData
 
 
 

@@ -16,4 +16,10 @@
     <string name="origin">Origin</string>
     <string name="statusDetails">Status</string>
     <string name="speciesDetails">Species</string>
+    <string name="planet">Planet</string>
+    <string name="dimension">Dimension</string>
+    <string name="type">Type</string>
+    <string name="planets">Planet</string>
+    <string name="dimensions">Dimension:</string>
+    <string name="name">Name</string>
 </resources>

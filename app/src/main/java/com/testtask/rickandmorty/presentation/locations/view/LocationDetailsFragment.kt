@@ -1,46 +1,40 @@
-package com.testtask.rickandmorty.presentation.episodes.view
+package com.testtask.rickandmorty.presentation.locations.view
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import coil.load
-import coil.transform.CircleCropTransformation
 import com.testtask.rickandmorty.App
 import com.testtask.rickandmorty.R
-import com.testtask.rickandmorty.databinding.FragmentCharacterDetailsBinding
-import com.testtask.rickandmorty.databinding.FragmentEpisodeDetailBinding
+import com.testtask.rickandmorty.databinding.FragmentLocationsDetailsBinding
 import com.testtask.rickandmorty.domain.AppState
-import com.testtask.rickandmorty.domain.model.CharactersData
-import com.testtask.rickandmorty.domain.model.EpisodeData
-import com.testtask.rickandmorty.presentation.character.adapter.CharactersDetailsAdapter
+import com.testtask.rickandmorty.domain.model.LocationData
 import com.testtask.rickandmorty.presentation.character.view.CharacterDetailsFragment
-import com.testtask.rickandmorty.presentation.character.viewModel.CharacterDetailsViewModel
-import com.testtask.rickandmorty.presentation.episodes.adapter.EpisodeDetailsAdapter
 import com.testtask.rickandmorty.presentation.episodes.viewmodel.EpisodeDetailViewModel
-import kotlinx.android.synthetic.main.fragment_episode_detail.*
+import com.testtask.rickandmorty.presentation.locations.adapter.LocationDetailsAdapter
+import com.testtask.rickandmorty.presentation.locations.viewmodels.LocationsDetailViewModel
+import kotlinx.android.synthetic.main.location_item_rv.*
 
-class EpisodeDetailFragment : Fragment() {
 
-    private lateinit var viewModel: EpisodeDetailViewModel
+class LocationDetailsFragment : Fragment() {
 
-    private var _binding: FragmentEpisodeDetailBinding? = null
+    private lateinit var viewModel: LocationsDetailViewModel
+
+    private var _binding: FragmentLocationsDetailsBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var episode: EpisodeData
-    private val adapter: EpisodeDetailsAdapter by lazy {
-        EpisodeDetailsAdapter()
+    private lateinit var location: LocationData
+    private val adapter: LocationDetailsAdapter by lazy {
+        LocationDetailsAdapter()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val viewModelFactory = App.instance.component.getViewModelFactory()
-        viewModel = ViewModelProvider(this, viewModelFactory)[EpisodeDetailViewModel::class.java]
+        viewModel = ViewModelProvider(this, viewModelFactory)[LocationsDetailViewModel::class.java]
     }
 
 
@@ -48,14 +42,15 @@ class EpisodeDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentEpisodeDetailBinding.inflate(inflater, container, false)
+        _binding = FragmentLocationsDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        episode = arguments?.getParcelable(EPISODE_EXTRA) ?: EpisodeData()
-        showInfo(episode)
+        location = arguments?.getParcelable(Location_EXTRA) ?: LocationData()
+        showInfo(location)
 
         binding.swipeRefreshLayout.setOnRefreshListener {
             getData()
@@ -67,19 +62,20 @@ class EpisodeDetailFragment : Fragment() {
         initTryAgainButton()
     }
 
-    private fun showInfo(episodeData: EpisodeData) {
+
+    private fun showInfo(location: LocationData) {
 
         with(binding) {
-            episodeDate.text = episodeData.air_date
-            episodeName.text = episodeData.name
-            episode.text = episodeData.episode
+            locationName.text  = location.name
+            locationDimension.text = location.dimension
+            locationType.text = location.type
         }
 
     }
 
 
     private fun getData() {
-        viewModel.getCharacterList(episode)
+        viewModel.getCharactersList(location)
         viewModel.liveData.observe(viewLifecycleOwner) { appState ->
             renderData(appState)
         }
@@ -90,7 +86,7 @@ class EpisodeDetailFragment : Fragment() {
             recyclerViewCharacters.adapter = adapter
             recyclerViewCharacters.layoutManager = GridLayoutManager(requireContext(), 2)
         }
-        adapter.listener = EpisodeDetailsAdapter.OnListItemClickListener { data ->
+        adapter.listener = LocationDetailsAdapter.OnListItemClickListener { data ->
             requireActivity().supportFragmentManager
                 .beginTransaction()
                 .replace(
@@ -166,9 +162,13 @@ class EpisodeDetailFragment : Fragment() {
     }
 
 
+
+
     companion object {
-        const val EPISODE_EXTRA = "Episode"
-        fun newInstance(bundle: Bundle) = EpisodeDetailFragment().apply {
+
+        const val Location_EXTRA = "Locations"
+
+        fun newInstance(bundle: Bundle) = LocationDetailsFragment().apply {
             arguments = bundle
         }
     }

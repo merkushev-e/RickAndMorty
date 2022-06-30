@@ -20,6 +20,8 @@ import com.testtask.rickandmorty.domain.model.CharactersData
 import com.testtask.rickandmorty.presentation.character.adapter.CharactersDetailsAdapter
 import com.testtask.rickandmorty.presentation.character.viewModel.CharacterDetailsViewModel
 import com.testtask.rickandmorty.presentation.episodes.view.EpisodeDetailFragment
+import com.testtask.rickandmorty.presentation.locations.view.LocationDetailsFragment
+import com.testtask.rickandmorty.presentation.locations.viewmodels.LocationsDetailViewModel
 import java.lang.Error
 
 class CharacterDetailsFragment : Fragment() {
@@ -110,8 +112,11 @@ class CharacterDetailsFragment : Fragment() {
             characterStatus.text = character.status
             characterLocation.text = character.location.name
             characterLocation.setOnClickListener {
-//                requireActivity().supportFragmentManager.beginTransaction()
-//                    .replace(R.id.container,)
+                viewModel.getLocations(character.location)
+                viewModel.liveData.observe(viewLifecycleOwner) { appState ->
+                    renderData(appState)
+                }
+
             }
         }
     }
@@ -130,6 +135,13 @@ class CharacterDetailsFragment : Fragment() {
                 stopRefreshAnimationIfNeeded()
                 adapter.setData(appState.data)
                 showViewSuccess()
+            }
+            is AppState.SuccessDetailsLocation -> {
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .replace(R.id.container, LocationDetailsFragment.newInstance(Bundle().apply {
+                        putParcelable(LocationDetailsFragment.Location_EXTRA, appState.data)
+                    }))
+                    .commit()
             }
             is AppState.Loading -> {
                 stopRefreshAnimationIfNeeded()

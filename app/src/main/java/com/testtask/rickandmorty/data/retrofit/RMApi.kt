@@ -1,9 +1,6 @@
 package com.testtask.rickandmorty.data.retrofit
 
-import com.testtask.rickandmorty.data.retrofit.model.CharacterDataDTO
-import com.testtask.rickandmorty.data.retrofit.model.CharactersResponseDTO
-import com.testtask.rickandmorty.data.retrofit.model.EpisodeDTO
-import com.testtask.rickandmorty.data.retrofit.model.EpisodesResultDTO
+import com.testtask.rickandmorty.data.retrofit.model.*
 import kotlinx.coroutines.Deferred
 import retrofit2.Response
 import retrofit2.http.GET
@@ -24,5 +21,11 @@ interface RMApi {
 
     @GET("episode")
     suspend fun getAllEpisode(@Query("page") page: Int? = null): EpisodesResultDTO
+
+    @GET("location")
+    suspend fun getAllLocation(@Query("page") page: Int? = null): LocationsResultDTO
+
+    @GET("location/{id}")
+    suspend fun getLocation(@Path("id") locationId: Int): LocationDTO
 
 }

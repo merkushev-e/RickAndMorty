@@ -8,7 +8,7 @@ import com.testtask.rickandmorty.R
 import com.testtask.rickandmorty.databinding.ActivityMainBinding
 import com.testtask.rickandmorty.presentation.character.view.CharactersFragment
 import com.testtask.rickandmorty.presentation.episodes.view.EpisodesFragment
-import com.testtask.rickandmorty.presentation.locations.LocationsFragment
+import com.testtask.rickandmorty.presentation.locations.view.LocationsFragment
 
 class MainActivity : AppCompatActivity() {
 

@@ -8,24 +8,15 @@ import com.testtask.rickandmorty.data.retrofit.model.EpisodesResultDTO
 import com.testtask.rickandmorty.domain.model.EpisodeData
 import com.testtask.rickandmorty.domain.model.EpisodesResultData
 
-class RemoteDataSource(private val api: RMApi) :
-    DataSource<CharactersResponseDTO, CharacterDataDTO, EpisodesResultDTO, EpisodeDTO> {
+class RemoteDataCharacters(private val api: RMApi) :
+    DataSource<CharactersResponseDTO, CharacterDataDTO> {
 
-    override suspend fun getCharactersByPages(page: Int): CharactersResponseDTO {
+    override suspend fun getDataByPages(page: Int): CharactersResponseDTO {
         return api.getAllCharacters(page)
     }
 
-    override suspend fun getCharacterDetailsById(id: Int): CharacterDataDTO {
+    override suspend fun getDataById(id: Int): CharacterDataDTO {
         return api.getCharacter(id)
     }
-
-    override suspend fun getEpisodesByPages(page: Int): EpisodesResultDTO {
-        return api.getAllEpisode(page)
-    }
-
-    override suspend fun getEpisodesDetailsById(id: Int): EpisodeDTO {
-        return api.getEpisodeById(id)
-    }
-
 
 }

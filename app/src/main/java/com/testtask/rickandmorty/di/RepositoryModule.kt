@@ -1,20 +1,15 @@
 package com.testtask.rickandmorty.di
 
-import androidx.paging.PagingData
 import com.testtask.rickandmorty.data.DataSource
+import com.testtask.rickandmorty.data.retrofit.RemoteDataSourceEpisodes
 import com.testtask.rickandmorty.domain.Repository
 import com.testtask.rickandmorty.data.repositories.RepositoryImpl
-import com.testtask.rickandmorty.data.retrofit.RMApi
 import com.testtask.rickandmorty.data.retrofit.RMApiFactory
-import com.testtask.rickandmorty.data.retrofit.RemoteDataSource
-import com.testtask.rickandmorty.data.retrofit.model.CharacterDataDTO
-import com.testtask.rickandmorty.data.retrofit.model.CharactersResponseDTO
-import com.testtask.rickandmorty.data.retrofit.model.EpisodeDTO
-import com.testtask.rickandmorty.data.retrofit.model.EpisodesResultDTO
-import com.testtask.rickandmorty.domain.model.CharactersData
+import com.testtask.rickandmorty.data.retrofit.RemoteDataCharacters
+import com.testtask.rickandmorty.data.retrofit.RemoteDataSourceLocations
+import com.testtask.rickandmorty.data.retrofit.model.*
 import dagger.Module
 import dagger.Provides
-import kotlinx.coroutines.flow.Flow
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -24,12 +19,30 @@ class RepositoryModule {
     @Provides
     @Singleton
     @Named(NAME_REMOTE)
-    fun provideRepository (dataSource: RemoteDataSource): Repository {
-        return RepositoryImpl(dataSource)
+    fun provideRepository(
+        characters: RemoteDataCharacters,
+        episodes: RemoteDataSourceEpisodes,
+        locations: RemoteDataSourceLocations
+    ): Repository {
+        return RepositoryImpl(characters, episodes,locations)
     }
 
 
     @Provides
     @Singleton
-    fun provideRemoteDataSource() :  DataSource<CharactersResponseDTO, CharacterDataDTO, EpisodesResultDTO, EpisodeDTO> = RemoteDataSource(RMApiFactory.create())
+    fun provideRemoteDataSourceCharacters(): DataSource<CharactersResponseDTO, CharacterDataDTO> =
+        RemoteDataCharacters(RMApiFactory.create())
+
+    @Provides
+    @Singleton
+    fun provideRemoteDataSourceEpisodes(): DataSource<EpisodesResultDTO, EpisodeDTO> =
+        RemoteDataSourceEpisodes(RMApiFactory.create())
+
+
+    @Provides
+    @Singleton
+    fun provideRemoteDataSourceLocations(): DataSource<LocationsResultDTO, LocationDTO> =
+        RemoteDataSourceLocations(RMApiFactory.create())
+
+
 }
