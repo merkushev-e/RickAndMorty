@@ -6,6 +6,8 @@ import com.testtask.rickandmorty.presentation.character.viewModel.CharacterDetai
 import com.testtask.rickandmorty.presentation.character.viewModel.CharactersViewModel
 import com.testtask.rickandmorty.presentation.episodes.viewmodel.EpisodeDetailViewModel
 import com.testtask.rickandmorty.presentation.episodes.viewmodel.EpisodesViewModel
+import com.testtask.rickandmorty.presentation.locations.viewmodels.LocationsDetailViewModel
+import com.testtask.rickandmorty.presentation.locations.viewmodels.LocationsViewModel
 import dagger.MapKey
 import dagger.Module
 import dagger.Provides
@@ -40,6 +42,20 @@ class ViewModelModule {
     @Provides
     fun provideEpisodeDetailViewModel(repository: RepositoryImpl): ViewModel {
         return EpisodeDetailViewModel(repository)
+    }
+
+    @IntoMap
+    @ViewModelKey(LocationsViewModel::class)
+    @Provides
+    fun provideLocationsViewModel(repository: RepositoryImpl): ViewModel {
+        return LocationsViewModel(repository)
+    }
+
+    @IntoMap
+    @ViewModelKey(LocationsDetailViewModel::class)
+    @Provides
+    fun provideLocationsDetailViewModel(repository: RepositoryImpl): ViewModel {
+        return LocationsDetailViewModel(repository)
     }
 }
 

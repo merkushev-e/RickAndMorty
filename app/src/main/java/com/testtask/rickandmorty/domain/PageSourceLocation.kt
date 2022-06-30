@@ -11,6 +11,7 @@ import com.testtask.rickandmorty.data.retrofit.model.LocationsResultDTO
 import com.testtask.rickandmorty.domain.model.EpisodeData
 import com.testtask.rickandmorty.domain.model.LocationData
 import com.testtask.rickandmorty.utils.toEpisodeData
+import com.testtask.rickandmorty.utils.toLocationData
 
 class PageSourceLocation(
     private val remoteDataSource: DataSource<LocationsResultDTO, LocationDTO>
@@ -37,7 +38,7 @@ class PageSourceLocation(
                 nextKey = nextPageQuery?.toInt()
             }
 
-            val results = response.results.map { it.toEpisodeData() }
+            val results = response.results.map { it.toLocationData() }
             val prevKey = if (page == 1) null else page - 1
 
             return PagingSource.LoadResult.Page(results, prevKey, nextKey)

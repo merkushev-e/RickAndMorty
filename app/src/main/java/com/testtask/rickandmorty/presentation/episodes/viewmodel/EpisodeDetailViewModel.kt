@@ -22,10 +22,10 @@ class EpisodeDetailViewModel  @Inject constructor(
     private val resultList = mutableListOf<CharactersData>()
 
 
-    fun getEpisodesList(episodeData: EpisodeData) {
+    fun getCharacterList(episodeData: EpisodeData) {
         liveDataToObserve.value = AppState.Loading(null)
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-
+            resultList.clear()
             episodeData.characters.forEach {
                 val episodeId = it.split("/")[5].toInt()
                 resultList.add(repository.getCharacterDetails(episodeId))

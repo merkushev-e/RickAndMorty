@@ -17,7 +17,7 @@ interface Repository{
      suspend fun getEpisodeById(id: Int): EpisodeData
      fun getAllEpisode(): Flow<PagingData<EpisodeData>>
      fun getAllLocations(): Flow<PagingData<LocationData>>
-     fun getLocationById(id: Int): LocationData
+     suspend fun getLocationById(id: Int): LocationData
 
 
 
