@@ -21,6 +21,7 @@ import com.testtask.rickandmorty.domain.model.CharactersData
 import com.testtask.rickandmorty.presentation.character.adapter.CharactersAdapter
 import com.testtask.rickandmorty.presentation.character.adapter.CharactersLoadStateAdapter
 import com.testtask.rickandmorty.presentation.character.viewModel.CharactersViewModel
+import com.testtask.rickandmorty.utils.OnlineLiveData
 import com.testtask.rickandmorty.utils.simpleScan
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -37,9 +38,13 @@ class CharactersFragment : Fragment() {
     private lateinit var charactersLoadStateHolder: CharactersLoadStateAdapter.ViewHolder
     private lateinit var viewModel: CharactersViewModel
 
+    private var isNetworkAvailable: Boolean = false
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        subscribeToNetworkChange()
         val viewModelFactory = App.instance.component.getViewModelFactory()
         viewModel = ViewModelProvider(this, viewModelFactory)[CharactersViewModel::class.java]
     }
@@ -65,7 +70,10 @@ class CharactersFragment : Fragment() {
 
     private fun initAdapter() {
 
-        val tryAgainAction = { adapter.retry() }
+        val tryAgainAction = {
+            getData()
+            adapter.refresh()
+        }
         val footerAdapter = CharactersLoadStateAdapter(tryAgainAction)
         val adapterLoadState = adapter.withLoadStateFooter(footerAdapter)
         charactersLoadStateHolder = CharactersLoadStateAdapter.ViewHolder(
@@ -76,18 +84,19 @@ class CharactersFragment : Fragment() {
 
         with(binding) {
             charactersRV.adapter = adapterLoadState
-            charactersRV.layoutManager = GridLayoutManager(requireContext(), 2).apply {
-                spanSizeLookup = object : GridLayoutManager.SpanSizeLookup(){
-                    override fun getSpanSize(position: Int): Int {
-                        return if (adapter.itemCount - 10  == position-2) {
-                            Log.d("TAGG", "position in $position")
-                            2
-                        } else{
-                            1
-                        }
-                    }
-                }
-            }
+            charactersRV.layoutManager = GridLayoutManager(requireContext(), 2)
+//                .apply {
+//                spanSizeLookup = object : GridLayoutManager.SpanSizeLookup(){
+//                    override fun getSpanSize(position: Int): Int {
+//                        return if (adapter.itemCount - 10  == position-2) {
+//                            Log.d("TAGG", "position in $position")
+//                            2
+//                        } else{
+//                            1
+//                        }
+//                    }
+//                }
+//            }
             adapter.listener = CharactersAdapter.OnListItemClickListener {
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.container, CharacterDetailsFragment.newInstance(Bundle().apply {
@@ -104,6 +113,8 @@ class CharactersFragment : Fragment() {
         viewModel.liveData.observe(viewLifecycleOwner) { appState ->
             renderData(appState)
         }
+        viewModel.getData(isNetworkAvailable)
+
     }
 
 
@@ -145,8 +156,24 @@ class CharactersFragment : Fragment() {
 
     }
 
+    private fun subscribeToNetworkChange() {
+        OnlineLiveData(requireContext()).observe(
+            this
+        ) {
+            isNetworkAvailable = it
+            if (!isNetworkAvailable) {
+                Toast.makeText(
+                    requireActivity(),
+                    R.string.check_network,
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+        }
+    }
+
+
     private fun showErrorScreen(message: String?) {
-        Toast.makeText(requireActivity(),"Cannot load data", Toast.LENGTH_SHORT).show()
+        binding.loadStateView.messageTextView.text = message
     }
 
 
@@ -159,7 +186,7 @@ class CharactersFragment : Fragment() {
 
     private fun setupSwipeToRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.refresh()
+            viewModel.getData(isNetworkAvailable)
         }
     }
 

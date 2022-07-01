@@ -22,4 +22,5 @@
     <string name="planets">Planet</string>
     <string name="dimensions">Dimension:</string>
     <string name="name">Name</string>
+    <string name="check_network">Check Network Settings</string>
 </resources>

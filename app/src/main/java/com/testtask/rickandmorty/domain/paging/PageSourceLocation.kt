@@ -1,16 +1,12 @@
-package com.testtask.rickandmorty.domain
+package com.testtask.rickandmorty.domain.paging
 
 import android.net.Uri
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.testtask.rickandmorty.data.DataSource
-import com.testtask.rickandmorty.data.retrofit.model.EpisodeDTO
-import com.testtask.rickandmorty.data.retrofit.model.EpisodesResultDTO
 import com.testtask.rickandmorty.data.retrofit.model.LocationDTO
 import com.testtask.rickandmorty.data.retrofit.model.LocationsResultDTO
-import com.testtask.rickandmorty.domain.model.EpisodeData
 import com.testtask.rickandmorty.domain.model.LocationData
-import com.testtask.rickandmorty.utils.toEpisodeData
 import com.testtask.rickandmorty.utils.toLocationData
 
 class PageSourceLocation(

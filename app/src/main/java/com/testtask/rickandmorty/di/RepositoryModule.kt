@@ -1,16 +1,16 @@
 package com.testtask.rickandmorty.di
 
 import com.testtask.rickandmorty.data.DataSource
-import com.testtask.rickandmorty.data.retrofit.RemoteDataSourceEpisodes
 import com.testtask.rickandmorty.domain.Repository
 import com.testtask.rickandmorty.data.repositories.RepositoryImpl
-import com.testtask.rickandmorty.data.retrofit.RMApiFactory
-import com.testtask.rickandmorty.data.retrofit.RemoteDataCharacters
-import com.testtask.rickandmorty.data.retrofit.RemoteDataSourceLocations
+import com.testtask.rickandmorty.data.retrofit.*
 import com.testtask.rickandmorty.data.retrofit.model.*
+import com.testtask.rickandmorty.data.room.characters.CharacterDataEntity
+import com.testtask.rickandmorty.data.room.DataBase
+import com.testtask.rickandmorty.data.room.LocalDataSource
+import com.testtask.rickandmorty.data.room.RoomDataBaseImplementation
 import dagger.Module
 import dagger.Provides
-import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -18,31 +18,36 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    @Named(NAME_REMOTE)
     fun provideRepository(
         characters: RemoteDataCharacters,
         episodes: RemoteDataSourceEpisodes,
-        locations: RemoteDataSourceLocations
+        locations: RemoteDataSourceLocations,
+        localDataSource: RoomDataBaseImplementation
     ): Repository {
-        return RepositoryImpl(characters, episodes,locations)
+        return RepositoryImpl(characters, episodes,locations, localDataSource)
     }
 
 
     @Provides
     @Singleton
-    fun provideRemoteDataSourceCharacters(): DataSource<CharactersResponseDTO, CharacterDataDTO> =
-        RemoteDataCharacters(RMApiFactory.create())
+    fun provideRemoteDataSourceCharacters(rmApi: RMApi): DataSource<CharactersResponseDTO, CharacterDataDTO> =
+        RemoteDataCharacters(rmApi)
 
     @Provides
     @Singleton
-    fun provideRemoteDataSourceEpisodes(): DataSource<EpisodesResultDTO, EpisodeDTO> =
-        RemoteDataSourceEpisodes(RMApiFactory.create())
+    fun provideRemoteDataSourceEpisodes(rmApi: RMApi): DataSource<EpisodesResultDTO, EpisodeDTO> =
+        RemoteDataSourceEpisodes(rmApi)
 
 
     @Provides
     @Singleton
-    fun provideRemoteDataSourceLocations(): DataSource<LocationsResultDTO, LocationDTO> =
-        RemoteDataSourceLocations(RMApiFactory.create())
+    fun provideRemoteDataSourceLocations(rmApi: RMApi): DataSource<LocationsResultDTO, LocationDTO> =
+        RemoteDataSourceLocations(rmApi)
 
+
+    @Provides
+    @Singleton
+    fun provideLocalDataSource(db: DataBase): LocalDataSource<CharacterDataEntity, CharacterDataEntity> =
+        RoomDataBaseImplementation(db.dbDao())
 
 }

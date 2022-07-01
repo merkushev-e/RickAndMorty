@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.Flow
 
 
 interface Repository{
-     fun getCharactersByPage() : Flow<PagingData<CharactersData>>
-     fun saveData(appState: AppState)
+     fun getCharactersByPage(isOnline: Boolean) : Flow<PagingData<CharactersData>>
+     suspend fun saveData(appState: AppState)
      suspend fun getCharacterDetails(id: Int): CharactersData
      suspend fun getEpisodeById(id: Int): EpisodeData
      fun getAllEpisode(): Flow<PagingData<EpisodeData>>
