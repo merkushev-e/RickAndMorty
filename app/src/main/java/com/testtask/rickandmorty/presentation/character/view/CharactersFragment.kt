@@ -1,5 +1,7 @@
 package com.testtask.rickandmorty.presentation.character.view
 
+import android.content.Context
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isInvisible
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -23,6 +26,7 @@ import com.testtask.rickandmorty.presentation.character.adapter.CharactersLoadSt
 import com.testtask.rickandmorty.presentation.character.viewModel.CharactersViewModel
 import com.testtask.rickandmorty.utils.OnlineLiveData
 import com.testtask.rickandmorty.utils.simpleScan
+import kotlinx.android.synthetic.main.fragment_episodes.*
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
@@ -37,14 +41,11 @@ class CharactersFragment : Fragment() {
     }
     private lateinit var charactersLoadStateHolder: CharactersLoadStateAdapter.ViewHolder
     private lateinit var viewModel: CharactersViewModel
-
-    private var isNetworkAvailable: Boolean = false
-
+    private lateinit var onlineLiveData: OnlineLiveData
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        subscribeToNetworkChange()
         val viewModelFactory = App.instance.component.getViewModelFactory()
         viewModel = ViewModelProvider(this, viewModelFactory)[CharactersViewModel::class.java]
     }
@@ -53,25 +54,40 @@ class CharactersFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+
         _binding = FragmentCharactersBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
+        onlineLiveData = OnlineLiveData(requireActivity())
+        Log.d("online", "from livedata")
+        startLoadingOrShowError(false)
+        onlineLiveData.observe(viewLifecycleOwner) {
+            Log.d("online", "from livedata" + it.toString())
+            startLoadingOrShowError(it)
+            setupSwipeToRefresh(it)
+            if (!it) {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.saved_data_showed),
+                    Toast.LENGTH_LONG
+                )
+                    .show()
+            }
+        }
         initAdapter()
-        getData()
-        setupSwipeToRefresh()
         observeLoadState(adapter)
         handleListVisibility(adapter)
+
     }
+
+
 
     private fun initAdapter() {
 
         val tryAgainAction = {
-            getData()
             adapter.refresh()
         }
         val footerAdapter = CharactersLoadStateAdapter(tryAgainAction)
@@ -85,18 +101,6 @@ class CharactersFragment : Fragment() {
         with(binding) {
             charactersRV.adapter = adapterLoadState
             charactersRV.layoutManager = GridLayoutManager(requireContext(), 2)
-//                .apply {
-//                spanSizeLookup = object : GridLayoutManager.SpanSizeLookup(){
-//                    override fun getSpanSize(position: Int): Int {
-//                        return if (adapter.itemCount - 10  == position-2) {
-//                            Log.d("TAGG", "position in $position")
-//                            2
-//                        } else{
-//                            1
-//                        }
-//                    }
-//                }
-//            }
             adapter.listener = CharactersAdapter.OnListItemClickListener {
                 parentFragmentManager.beginTransaction()
                     .replace(R.id.container, CharacterDetailsFragment.newInstance(Bundle().apply {
@@ -109,11 +113,11 @@ class CharactersFragment : Fragment() {
     }
 
 
-    private fun getData() {
+    private fun getData(isOnline: Boolean) {
+        viewModel.getData(isOnline)
         viewModel.liveData.observe(viewLifecycleOwner) { appState ->
             renderData(appState)
         }
-        viewModel.getData(isNetworkAvailable)
 
     }
 
@@ -130,11 +134,13 @@ class CharactersFragment : Fragment() {
         getRefreshLoadStateFlow(adapter)
             .simpleScan(count = 3)
             .collectLatest { (beforePrevious, previous, current) ->
-                binding.charactersRV.isInvisible = current is LoadState.Error
-                        || previous is LoadState.Error
-                        || (beforePrevious is LoadState.Error && previous is LoadState.NotLoading
-                        && current is LoadState.Loading)
+                binding.charactersRV.isInvisible =
+                    current is LoadState.Error
+                            || previous is LoadState.Error
+                            || (beforePrevious is LoadState.Error && previous is LoadState.NotLoading
+                            && current is LoadState.Loading)
             }
+
     }
 
     private fun getRefreshLoadStateFlow(adapter: CharactersAdapter): Flow<LoadState> {
@@ -145,48 +151,52 @@ class CharactersFragment : Fragment() {
         when (appState) {
             is AppState.Success<*> -> {
                 showViewSuccess(appState as AppState.Success<PagingData<CharactersData>>)
-                appState.data
             }
             is AppState.Error -> {
-
                 showErrorScreen(appState.error.message)
+            }
+            is AppState.Loading -> {
+
+                showLoading()
             }
             else -> {}
         }
 
     }
 
-    private fun subscribeToNetworkChange() {
-        OnlineLiveData(requireContext()).observe(
-            this
-        ) {
-            isNetworkAvailable = it
-            if (!isNetworkAvailable) {
-                Toast.makeText(
-                    requireActivity(),
-                    R.string.check_network,
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+    private fun startLoadingOrShowError(isOnline: Boolean) {
+        if (isOnline) {
+            getData(isOnline)
+        } else {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.saved_data_showed),
+                Toast.LENGTH_LONG
+            )
+                .show()
+            getData(isOnline)
         }
     }
 
 
     private fun showErrorScreen(message: String?) {
-        binding.loadStateView.messageTextView.text = message
+        Toast.makeText(requireActivity(), message, Toast.LENGTH_SHORT).show()
     }
-
 
     private fun showViewSuccess(appState: AppState.Success<PagingData<CharactersData>>) {
         viewLifecycleOwner.lifecycleScope.launch {
             appState.data?.let { adapter.submitData(it) }
-        }
 
+        }
     }
 
-    private fun setupSwipeToRefresh() {
+    private fun showLoading() {
+        binding.loadStateView.progressBar.visibility = View.VISIBLE
+    }
+
+    private fun setupSwipeToRefresh(isOnline: Boolean) {
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.getData(isNetworkAvailable)
+            startLoadingOrShowError(isOnline)
         }
     }
 
@@ -195,8 +205,8 @@ class CharactersFragment : Fragment() {
         _binding = null
     }
 
-    companion object {
 
+    companion object {
         fun newInstance() =
             CharactersFragment()
     }

@@ -2,31 +2,32 @@ package com.testtask.rickandmorty.domain.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.testtask.rickandmorty.data.room.characters.CharacterDataEntity
 import com.testtask.rickandmorty.data.room.LocalDataSource
+import com.testtask.rickandmorty.data.room.characters.CharacterDataEntity
 import com.testtask.rickandmorty.data.room.episodes.EpisodeEntity
-import com.testtask.rickandmorty.domain.model.CharactersData
-import com.testtask.rickandmorty.utils.toCharactersData
+import com.testtask.rickandmorty.domain.model.EpisodeData
+import com.testtask.rickandmorty.utils.toEpisodeData
 
-class PageSourceLocalCharacters(private val localDataSource: LocalDataSource<CharacterDataEntity, EpisodeEntity>) :
-    PagingSource<Int, CharactersData>() {
-    override fun getRefreshKey(state: PagingState<Int, CharactersData>): Int? {
+class PageSourceLocalEpisodes (private val localDataSource: LocalDataSource<CharacterDataEntity, EpisodeEntity>) :
+    PagingSource<Int, EpisodeData>() {
+    override fun getRefreshKey(state: PagingState<Int, EpisodeData>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, CharactersData> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, EpisodeData> {
 
         try {
             val page = params.key ?: 1
             val pageSize = params.loadSize
             val offset = page * pageSize
 
-            val response = localDataSource.getDataByPages(limit = pageSize, offset = offset).map {
-                it.toCharactersData()
-            }
+            val response =
+                localDataSource.getEpisodeDataByPages(limit = pageSize, offset = offset).map {
+                    it.toEpisodeData()
+                }
             return LoadResult.Page(
                 data = response,
                 prevKey = if (page == 0) null else page - 1,
@@ -37,6 +38,6 @@ class PageSourceLocalCharacters(private val localDataSource: LocalDataSource<Cha
             return LoadResult.Error(e)
         }
     }
-
-
 }
+
+

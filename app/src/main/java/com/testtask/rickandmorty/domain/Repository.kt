@@ -15,7 +15,7 @@ interface Repository{
      suspend fun saveData(appState: AppState)
      suspend fun getCharacterDetails(id: Int): CharactersData
      suspend fun getEpisodeById(id: Int): EpisodeData
-     fun getAllEpisode(): Flow<PagingData<EpisodeData>>
+     fun getAllEpisode(isOnline: Boolean): Flow<PagingData<EpisodeData>>
      fun getAllLocations(): Flow<PagingData<LocationData>>
      suspend fun getLocationById(id: Int): LocationData
 

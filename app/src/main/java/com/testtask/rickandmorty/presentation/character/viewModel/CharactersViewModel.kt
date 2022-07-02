@@ -26,16 +26,16 @@ class CharactersViewModel @Inject constructor(
         }
 
 
-//    init {
-//
-////        liveData = getListData().cachedIn(viewModelScope).map { AppState.Success(it) }.asLiveData(viewModelScope.coroutineContext)
-//
-//        getData()
-//    }
+    init {
+
+//        liveData = getListData().cachedIn(viewModelScope).map { AppState.Success(it) }.asLiveData(viewModelScope.coroutineContext)
+
+//        getData(false)
+    }
 
 
     fun getData(isOnline: Boolean) {
-        Log.d("online", isOnline.toString())
+        Log.d("online",isOnline.toString())
         liveDataToObserve.value = AppState.Loading(null)
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             getListData(isOnline).cachedIn(viewModelScope).collect {

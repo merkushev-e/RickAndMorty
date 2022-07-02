@@ -23,4 +23,7 @@
     <string name="dimensions">Dimension:</string>
     <string name="name">Name</string>
     <string name="check_network">Check Network Settings</string>
+    <string name="saved_data_showed">Saved data has been shown, to update check your internet connection</string>
+    <string name="error">Error</string>
+    <string name="emptyData">Empty Data. Please connect to the Internet, and refresh page!</string>
 </resources>

@@ -140,7 +140,7 @@ class LocationsFragment : Fragment() {
     }
 
     private fun showErrorScreen(message: String?) {
-        Toast.makeText(requireActivity(),"Cannot load data", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireActivity(),message, Toast.LENGTH_SHORT).show()
     }
 
 

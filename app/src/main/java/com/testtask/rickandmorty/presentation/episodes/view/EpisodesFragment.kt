@@ -20,6 +20,7 @@ import com.testtask.rickandmorty.domain.model.EpisodeData
 import com.testtask.rickandmorty.presentation.character.adapter.CharactersLoadStateAdapter
 import com.testtask.rickandmorty.presentation.episodes.viewmodel.EpisodesViewModel
 import com.testtask.rickandmorty.presentation.episodes.adapter.EpisodesAdapter
+import com.testtask.rickandmorty.utils.OnlineLiveData
 import com.testtask.rickandmorty.utils.simpleScan
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -37,6 +38,8 @@ class EpisodesFragment : Fragment() {
     }
     private lateinit var charactersLoadStateHolder: CharactersLoadStateAdapter.ViewHolder
     private lateinit var viewModel: EpisodesViewModel
+    private lateinit var onlineLiveData: OnlineLiveData
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,24 +51,37 @@ class EpisodesFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding =  FragmentEpisodesBinding.inflate(inflater, container, false)
+        _binding = FragmentEpisodesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        startLoadingOrShowError(false)
+        onlineLiveData = OnlineLiveData(requireActivity())
+        onlineLiveData.observe(viewLifecycleOwner) {
+            startLoadingOrShowError(it)
+            setupSwipeToRefresh(it)
+            if (!it) {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.saved_data_showed),
+                    Toast.LENGTH_LONG
+                )
+                    .show()
+            }
+        }
 
         initAdapter()
-        getData()
-        setupSwipeToRefresh()
         observeLoadState(adapter)
         handleListVisibility(adapter)
     }
 
     private fun initAdapter() {
 
-        val tryAgainAction = { adapter.retry() }
+        val tryAgainAction = {
+            adapter.refresh()
+        }
         val footerAdapter = CharactersLoadStateAdapter(tryAgainAction)
         val adapterLoadState = adapter.withLoadStateFooter(footerAdapter)
         charactersLoadStateHolder = CharactersLoadStateAdapter.ViewHolder(
@@ -89,10 +105,11 @@ class EpisodesFragment : Fragment() {
     }
 
 
-    private fun getData() {
+    private fun getData(isOnline: Boolean) {
         viewModel.liveData.observe(viewLifecycleOwner) { appState ->
             renderData(appState)
         }
+        viewModel.getData(isOnline)
     }
 
 
@@ -128,13 +145,34 @@ class EpisodesFragment : Fragment() {
             is AppState.Error -> {
                 showErrorScreen(appState.error.message)
             }
+
+            is AppState.Loading -> {
+                showLoading()
+            }
             else -> {}
         }
 
     }
 
+
+
+    private fun startLoadingOrShowError(isOnline: Boolean) {
+        if (isOnline) {
+            getData(isOnline)
+        } else {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.saved_data_showed),
+                Toast.LENGTH_LONG
+            )
+                .show()
+            getData(isOnline)
+        }
+    }
+
+
     private fun showErrorScreen(message: String?) {
-        Toast.makeText(requireActivity(),"Cannot load data", Toast.LENGTH_SHORT).show()
+        binding.loadStateView.messageTextView.text = message
     }
 
 
@@ -144,10 +182,13 @@ class EpisodesFragment : Fragment() {
         }
 
     }
+    private fun showLoading() {
+        binding.loadStateView.progressBar.visibility = View.VISIBLE
+    }
 
-    private fun setupSwipeToRefresh() {
+    private fun setupSwipeToRefresh(isOnline: Boolean) {
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.refresh()
+            startLoadingOrShowError(isOnline)
         }
     }
 

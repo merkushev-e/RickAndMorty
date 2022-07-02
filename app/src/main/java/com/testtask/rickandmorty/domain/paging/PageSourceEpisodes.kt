@@ -6,11 +6,16 @@ import androidx.paging.PagingState
 import com.testtask.rickandmorty.data.DataSource
 import com.testtask.rickandmorty.data.retrofit.model.EpisodeDTO
 import com.testtask.rickandmorty.data.retrofit.model.EpisodesResultDTO
+import com.testtask.rickandmorty.data.room.LocalDataSource
+import com.testtask.rickandmorty.data.room.characters.CharacterDataEntity
+import com.testtask.rickandmorty.data.room.episodes.EpisodeEntity
 import com.testtask.rickandmorty.domain.model.EpisodeData
 import com.testtask.rickandmorty.utils.toEpisodeData
+import com.testtask.rickandmorty.utils.toEpisodeEntity
 
 class PageSourceEpisodes(
-    private val remoteDataSource: DataSource<EpisodesResultDTO, EpisodeDTO>
+    private val remoteDataSource: DataSource<EpisodesResultDTO, EpisodeDTO>,
+    private val  localDataSource: LocalDataSource<CharacterDataEntity, EpisodeEntity>
 ) : PagingSource<Int, EpisodeData>() {
 
     override fun getRefreshKey(state: PagingState<Int, EpisodeData>): Int? {
@@ -35,6 +40,10 @@ class PageSourceEpisodes(
             }
 
             val results = response.results.map { it.toEpisodeData() }
+            localDataSource.saveEpisodeToDb(results.map {
+                it.toEpisodeEntity()
+            })
+
             val prevKey = if (page == 1) null else page - 1
 
             return PagingSource.LoadResult.Page(results, prevKey, nextKey)
