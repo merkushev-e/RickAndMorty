@@ -5,10 +5,11 @@ import androidx.paging.PagingState
 import com.testtask.rickandmorty.data.room.characters.CharacterDataEntity
 import com.testtask.rickandmorty.data.room.LocalDataSource
 import com.testtask.rickandmorty.data.room.episodes.EpisodeEntity
+import com.testtask.rickandmorty.data.room.location.LocationEntity
 import com.testtask.rickandmorty.domain.model.CharactersData
 import com.testtask.rickandmorty.utils.toCharactersData
 
-class PageSourceLocalCharacters(private val localDataSource: LocalDataSource<CharacterDataEntity, EpisodeEntity>) :
+class PageSourceLocalCharacters(private val localDataSource: LocalDataSource<CharacterDataEntity, EpisodeEntity, LocationEntity>) :
     PagingSource<Int, CharactersData>() {
     override fun getRefreshKey(state: PagingState<Int, CharactersData>): Int? {
         return state.anchorPosition?.let { anchorPosition ->

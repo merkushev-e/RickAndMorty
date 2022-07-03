@@ -64,6 +64,7 @@ class CharactersFragment : Fragment() {
         onlineLiveData = OnlineLiveData(requireActivity())
         Log.d("online", "from livedata")
         startLoadingOrShowError(false)
+        setupSwipeToRefresh(false)
         onlineLiveData.observe(viewLifecycleOwner) {
             Log.d("online", "from livedata" + it.toString())
             startLoadingOrShowError(it)
@@ -139,6 +140,7 @@ class CharactersFragment : Fragment() {
                             || previous is LoadState.Error
                             || (beforePrevious is LoadState.Error && previous is LoadState.NotLoading
                             && current is LoadState.Loading)
+
             }
 
     }
@@ -165,17 +167,7 @@ class CharactersFragment : Fragment() {
     }
 
     private fun startLoadingOrShowError(isOnline: Boolean) {
-        if (isOnline) {
             getData(isOnline)
-        } else {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.saved_data_showed),
-                Toast.LENGTH_LONG
-            )
-                .show()
-            getData(isOnline)
-        }
     }
 
 
@@ -184,6 +176,7 @@ class CharactersFragment : Fragment() {
     }
 
     private fun showViewSuccess(appState: AppState.Success<PagingData<CharactersData>>) {
+
         viewLifecycleOwner.lifecycleScope.launch {
             appState.data?.let { adapter.submitData(it) }
 
@@ -199,6 +192,7 @@ class CharactersFragment : Fragment() {
             startLoadingOrShowError(isOnline)
         }
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()

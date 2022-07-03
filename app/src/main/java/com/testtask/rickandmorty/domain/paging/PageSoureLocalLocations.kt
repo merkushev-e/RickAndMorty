@@ -6,19 +6,19 @@ import com.testtask.rickandmorty.data.room.LocalDataSource
 import com.testtask.rickandmorty.data.room.characters.CharacterDataEntity
 import com.testtask.rickandmorty.data.room.episodes.EpisodeEntity
 import com.testtask.rickandmorty.data.room.location.LocationEntity
-import com.testtask.rickandmorty.domain.model.EpisodeData
-import com.testtask.rickandmorty.utils.toEpisodeData
+import com.testtask.rickandmorty.domain.model.LocationData
+import com.testtask.rickandmorty.utils.toLocationData
 
-class PageSourceLocalEpisodes (private val localDataSource: LocalDataSource<CharacterDataEntity, EpisodeEntity, LocationEntity>) :
-    PagingSource<Int, EpisodeData>() {
-    override fun getRefreshKey(state: PagingState<Int, EpisodeData>): Int? {
+class PageSourceLocalLocations (private val localDataSource: LocalDataSource<CharacterDataEntity, EpisodeEntity, LocationEntity>) :
+    PagingSource<Int, LocationData>() {
+    override fun getRefreshKey(state: PagingState<Int, LocationData>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
             state.closestPageToPosition(anchorPosition)?.prevKey?.plus(1)
                 ?: state.closestPageToPosition(anchorPosition)?.nextKey?.minus(1)
         }
     }
 
-    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, EpisodeData> {
+    override suspend fun load(params: LoadParams<Int>): LoadResult<Int, LocationData> {
 
         try {
             val page = params.key ?: 1
@@ -26,8 +26,8 @@ class PageSourceLocalEpisodes (private val localDataSource: LocalDataSource<Char
             val offset = page * pageSize
 
             val response =
-                localDataSource.getEpisodeDataByPages(limit = pageSize, offset = offset).map {
-                    it.toEpisodeData()
+                localDataSource.getLocationDataByPages(limit = pageSize, offset = offset).map {
+                    it.toLocationData()
                 }
             return LoadResult.Page(
                 data = response,
@@ -39,6 +39,5 @@ class PageSourceLocalEpisodes (private val localDataSource: LocalDataSource<Char
             return LoadResult.Error(e)
         }
     }
+
 }
-
-

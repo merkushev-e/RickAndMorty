@@ -9,13 +9,15 @@ import com.testtask.rickandmorty.data.retrofit.model.EpisodesResultDTO
 import com.testtask.rickandmorty.data.room.LocalDataSource
 import com.testtask.rickandmorty.data.room.characters.CharacterDataEntity
 import com.testtask.rickandmorty.data.room.episodes.EpisodeEntity
+import com.testtask.rickandmorty.data.room.location.LocationEntity
 import com.testtask.rickandmorty.domain.model.EpisodeData
+import com.testtask.rickandmorty.domain.model.LocationData
 import com.testtask.rickandmorty.utils.toEpisodeData
 import com.testtask.rickandmorty.utils.toEpisodeEntity
 
 class PageSourceEpisodes(
     private val remoteDataSource: DataSource<EpisodesResultDTO, EpisodeDTO>,
-    private val  localDataSource: LocalDataSource<CharacterDataEntity, EpisodeEntity>
+    private val localDataSource: LocalDataSource<CharacterDataEntity, EpisodeEntity,LocationEntity>
 ) : PagingSource<Int, EpisodeData>() {
 
     override fun getRefreshKey(state: PagingState<Int, EpisodeData>): Int? {

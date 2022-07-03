@@ -9,6 +9,7 @@ import com.testtask.rickandmorty.data.retrofit.model.*
 import com.testtask.rickandmorty.data.room.characters.CharacterDataEntity
 import com.testtask.rickandmorty.data.room.LocalDataSource
 import com.testtask.rickandmorty.data.room.episodes.EpisodeEntity
+import com.testtask.rickandmorty.data.room.location.LocationEntity
 import com.testtask.rickandmorty.domain.AppState
 import com.testtask.rickandmorty.domain.Repository
 import com.testtask.rickandmorty.domain.model.CharactersData
@@ -26,7 +27,7 @@ class RepositoryImpl
     private val remoteDataSourceCharacters: DataSource<CharactersResponseDTO, CharacterDataDTO>,
     private val remoteDataSourceEpisode: DataSource<EpisodesResultDTO, EpisodeDTO>,
     private val remoteDataSourceLocations: DataSource<LocationsResultDTO, LocationDTO>,
-    private val localDataSource: LocalDataSource<CharacterDataEntity, EpisodeEntity>
+    private val localDataSource: LocalDataSource<CharacterDataEntity, EpisodeEntity, LocationEntity>
 ) : Repository {
     override fun getCharactersByPage(isOnline: Boolean): Flow<PagingData<CharactersData>> {
 
@@ -75,11 +76,19 @@ class RepositoryImpl
 
     }
 
-    override fun getAllLocations(): Flow<PagingData<LocationData>> {
-        return Pager(
-            config = PagingConfig(pageSize = 10),
-            pagingSourceFactory = { PageSourceLocation(remoteDataSourceLocations) }
-        ).flow
+    override fun getAllLocations(isOnline: Boolean): Flow<PagingData<LocationData>> {
+
+        return if (isOnline) {
+            Pager(
+                config = PagingConfig(pageSize = 10),
+                pagingSourceFactory = { PageSourceLocation(remoteDataSourceLocations, localDataSource) }
+            ).flow
+        } else{
+            Pager(
+                config = PagingConfig(pageSize = 10),
+                pagingSourceFactory = { PageSourceLocalLocations(localDataSource) }
+            ).flow
+        }
     }
 
     override suspend fun getLocationById(id: Int): LocationData {

@@ -16,7 +16,7 @@ interface Repository{
      suspend fun getCharacterDetails(id: Int): CharactersData
      suspend fun getEpisodeById(id: Int): EpisodeData
      fun getAllEpisode(isOnline: Boolean): Flow<PagingData<EpisodeData>>
-     fun getAllLocations(): Flow<PagingData<LocationData>>
+     fun getAllLocations(isOnline: Boolean): Flow<PagingData<LocationData>>
      suspend fun getLocationById(id: Int): LocationData
 
 

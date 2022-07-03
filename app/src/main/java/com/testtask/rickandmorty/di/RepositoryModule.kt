@@ -10,6 +10,7 @@ import com.testtask.rickandmorty.data.room.DataBase
 import com.testtask.rickandmorty.data.room.LocalDataSource
 import com.testtask.rickandmorty.data.room.RoomDataBaseImplementation
 import com.testtask.rickandmorty.data.room.episodes.EpisodeEntity
+import com.testtask.rickandmorty.data.room.location.LocationEntity
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -48,7 +49,7 @@ class RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideLocalDataSource(db: DataBase): LocalDataSource<CharacterDataEntity, EpisodeEntity> =
+    fun provideLocalDataSource(db: DataBase): LocalDataSource<CharacterDataEntity, EpisodeEntity, LocationEntity> =
         RoomDataBaseImplementation(db.dbDao())
 
 }

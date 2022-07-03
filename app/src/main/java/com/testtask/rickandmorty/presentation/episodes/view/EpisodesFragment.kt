@@ -58,6 +58,7 @@ class EpisodesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         startLoadingOrShowError(false)
+        setupSwipeToRefresh(false)
         onlineLiveData = OnlineLiveData(requireActivity())
         onlineLiveData.observe(viewLifecycleOwner) {
             startLoadingOrShowError(it)
@@ -157,17 +158,7 @@ class EpisodesFragment : Fragment() {
 
 
     private fun startLoadingOrShowError(isOnline: Boolean) {
-        if (isOnline) {
             getData(isOnline)
-        } else {
-            Toast.makeText(
-                requireContext(),
-                getString(R.string.saved_data_showed),
-                Toast.LENGTH_LONG
-            )
-                .show()
-            getData(isOnline)
-        }
     }
 
 

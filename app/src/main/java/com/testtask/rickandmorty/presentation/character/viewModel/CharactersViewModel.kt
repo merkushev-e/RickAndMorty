@@ -35,7 +35,6 @@ class CharactersViewModel @Inject constructor(
 
 
     fun getData(isOnline: Boolean) {
-        Log.d("online",isOnline.toString())
         liveDataToObserve.value = AppState.Loading(null)
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
             getListData(isOnline).cachedIn(viewModelScope).collect {

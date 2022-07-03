@@ -2,10 +2,11 @@ package com.testtask.rickandmorty.data.room
 
 import com.testtask.rickandmorty.data.room.characters.CharacterDataEntity
 import com.testtask.rickandmorty.data.room.episodes.EpisodeEntity
+import com.testtask.rickandmorty.data.room.location.LocationEntity
 import javax.inject.Inject
 
 
-class RoomDataBaseImplementation @Inject constructor(private val dbDao: DbDao): LocalDataSource<CharacterDataEntity, EpisodeEntity> {
+class RoomDataBaseImplementation @Inject constructor(private val dbDao: DbDao): LocalDataSource<CharacterDataEntity, EpisodeEntity,LocationEntity> {
     override suspend fun getDataByPages(page: Int): CharacterDataEntity {
         TODO("Not yet implemented")
     }
@@ -27,5 +28,13 @@ class RoomDataBaseImplementation @Inject constructor(private val dbDao: DbDao): 
     }
     override suspend fun getEpisodeDataByPages(limit: Int, offset: Int): List<EpisodeEntity> {
         return dbDao.getEpisodeData(limit,offset)
+    }
+
+    override suspend fun saveLocationToDb(dataList: List<LocationEntity>) {
+        dbDao.insertAllLocations(dataList)
+    }
+
+    override suspend fun getLocationDataByPages(limit: Int, offset: Int): List<LocationEntity> {
+        return dbDao.getLocationData(limit,offset)
     }
 }

@@ -6,6 +6,7 @@ import com.testtask.rickandmorty.data.retrofit.model.EpisodeDTO
 import com.testtask.rickandmorty.data.retrofit.model.LocationDTO
 import com.testtask.rickandmorty.data.room.characters.CharacterDataEntity
 import com.testtask.rickandmorty.data.room.episodes.EpisodeEntity
+import com.testtask.rickandmorty.data.room.location.LocationEntity
 import com.testtask.rickandmorty.domain.model.CharactersData
 import com.testtask.rickandmorty.domain.model.EpisodeData
 import com.testtask.rickandmorty.domain.model.LocationData
@@ -104,5 +105,32 @@ internal fun EpisodeData.toEpisodeEntity(): EpisodeEntity{
         characters = characters
     )
 }
+
+internal fun LocationEntity.toLocationData(): LocationData {
+    return LocationData(
+        id = id,
+        name = name,
+        type = type,
+        dimension = dimension,
+        residents = residents,
+        url = url,
+        created = created
+    )
+}
+
+internal fun LocationData.toLocationEntity(): LocationEntity {
+    return LocationEntity(
+        id = id,
+        name = name,
+        type = type,
+        dimension = dimension,
+        residents = residents,
+        url = url,
+        created = created
+    )
+}
+
+
+
 
 
