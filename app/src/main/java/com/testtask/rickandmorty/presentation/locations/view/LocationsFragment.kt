@@ -2,6 +2,7 @@ package com.testtask.rickandmorty.presentation.locations.view
 
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +24,7 @@ import com.testtask.rickandmorty.presentation.episodes.adapter.EpisodesAdapter
 import com.testtask.rickandmorty.presentation.episodes.view.EpisodeDetailFragment
 import com.testtask.rickandmorty.presentation.locations.adapter.LocationsAdapter
 import com.testtask.rickandmorty.presentation.locations.viewmodels.LocationsViewModel
+import com.testtask.rickandmorty.utils.OnlineLiveData
 import com.testtask.rickandmorty.utils.simpleScan
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collectLatest
@@ -41,6 +43,7 @@ class LocationsFragment : Fragment() {
 
     private lateinit var viewModel: LocationsViewModel
     private lateinit var charactersLoadStateHolder: CharactersLoadStateAdapter.ViewHolder
+    private lateinit var onlineLiveData: OnlineLiveData
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,11 +63,25 @@ class LocationsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        onlineLiveData = OnlineLiveData(requireActivity())
+        Log.d("online", "from livedata")
+        startLoadingOrShowError(false)
+        setupSwipeToRefresh(false)
+        onlineLiveData.observe(viewLifecycleOwner) {
+            Log.d("online", "from livedata" + it.toString())
+            startLoadingOrShowError(it)
+            setupSwipeToRefresh(it)
+            if (!it) {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.saved_data_showed),
+                    Toast.LENGTH_LONG
+                )
+                    .show()
+            }
+        }
 
         initAdapter()
-        getData()
-        setupSwipeToRefresh()
         observeLoadState(adapter)
         handleListVisibility(adapter)
     }
@@ -95,11 +112,13 @@ class LocationsFragment : Fragment() {
     }
 
 
-    private fun getData() {
+    private fun getData(isOnline: Boolean) {
+        viewModel.getData(isOnline)
         viewModel.liveData.observe(viewLifecycleOwner) { appState ->
             renderData(appState)
         }
     }
+
 
 
     private fun observeLoadState(adapter: LocationsAdapter) {
@@ -134,13 +153,22 @@ class LocationsFragment : Fragment() {
             is AppState.Error -> {
                 showErrorScreen(appState.error.message)
             }
+            is AppState.Loading -> {
+
+                showLoading()
+            }
             else -> {}
         }
 
     }
 
+
+    private fun startLoadingOrShowError(isOnline: Boolean) {
+            getData(isOnline)
+    }
+
     private fun showErrorScreen(message: String?) {
-        Toast.makeText(requireActivity(),"Cannot load data", Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireActivity(),message, Toast.LENGTH_SHORT).show()
     }
 
 
@@ -151,10 +179,15 @@ class LocationsFragment : Fragment() {
 
     }
 
-    private fun setupSwipeToRefresh() {
+    private fun setupSwipeToRefresh(isOnline: Boolean) {
         binding.swipeRefreshLayout.setOnRefreshListener {
-            viewModel.refresh()
+            startLoadingOrShowError(isOnline)
         }
+    }
+
+
+    private fun showLoading() {
+        binding.loadStateView.progressBar.visibility = View.VISIBLE
     }
 
     override fun onDestroyView() {

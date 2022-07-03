@@ -31,14 +31,14 @@ class LocationsViewModel @Inject constructor(
 
     init {
 //        liveData = getListData().cachedIn(viewModelScope).map { AppState.Success(it) }.asLiveData(viewModelScope.coroutineContext)
-        getData()
+//        getData()
     }
 
 
-    fun getData() {
+    fun getData(isOnline: Boolean) {
         liveDataToObserve.value = AppState.Loading(null)
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            getListData().cachedIn(viewModelScope).collect {
+            getListData(isOnline).cachedIn(viewModelScope).collect {
                 liveDataToObserve.postValue(AppState.Success(it))
             }
         }
@@ -46,13 +46,8 @@ class LocationsViewModel @Inject constructor(
 
     }
 
-    private fun getListData(): Flow<PagingData<LocationData>> {
-        return repository.getAllLocations()
-    }
-
-
-    fun refresh() {
-        getData()
+    private fun getListData(isOnline: Boolean): Flow<PagingData<LocationData>> {
+        return repository.getAllLocations(isOnline)
     }
 
     private fun handleError(error: Throwable) {

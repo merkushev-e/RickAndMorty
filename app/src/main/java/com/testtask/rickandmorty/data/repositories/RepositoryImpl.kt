@@ -1,18 +1,21 @@
 package com.testtask.rickandmorty.data.repositories
 
+import android.util.Log
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import com.testtask.rickandmorty.data.DataSource
 import com.testtask.rickandmorty.data.retrofit.model.*
-import com.testtask.rickandmorty.domain.paging.PageSource
+import com.testtask.rickandmorty.data.room.characters.CharacterDataEntity
+import com.testtask.rickandmorty.data.room.LocalDataSource
+import com.testtask.rickandmorty.data.room.episodes.EpisodeEntity
+import com.testtask.rickandmorty.data.room.location.LocationEntity
 import com.testtask.rickandmorty.domain.AppState
-import com.testtask.rickandmorty.domain.PageSourceLocation
-import com.testtask.rickandmorty.domain.paging.PageSourceEpisodes
 import com.testtask.rickandmorty.domain.Repository
 import com.testtask.rickandmorty.domain.model.CharactersData
 import com.testtask.rickandmorty.domain.model.EpisodeData
 import com.testtask.rickandmorty.domain.model.LocationData
+import com.testtask.rickandmorty.domain.paging.*
 import com.testtask.rickandmorty.utils.toCharactersData
 import com.testtask.rickandmorty.utils.toEpisodeData
 import com.testtask.rickandmorty.utils.toLocationData
@@ -23,41 +26,69 @@ class RepositoryImpl
 @Inject constructor(
     private val remoteDataSourceCharacters: DataSource<CharactersResponseDTO, CharacterDataDTO>,
     private val remoteDataSourceEpisode: DataSource<EpisodesResultDTO, EpisodeDTO>,
-    private val remoteDataSourceLocations: DataSource<LocationsResultDTO, LocationDTO>
+    private val remoteDataSourceLocations: DataSource<LocationsResultDTO, LocationDTO>,
+    private val localDataSource: LocalDataSource<CharacterDataEntity, EpisodeEntity, LocationEntity>
 ) : Repository {
-    override fun getCharactersByPage(): Flow<PagingData<CharactersData>> {
-        return Pager(
-            config = PagingConfig(pageSize = 10),
-            pagingSourceFactory = { PageSource(remoteDataSourceCharacters) }
-        ).flow
+    override fun getCharactersByPage(isOnline: Boolean): Flow<PagingData<CharactersData>> {
+
+        return if (isOnline){
+            Pager(
+                config = PagingConfig(pageSize = 10),
+                pagingSourceFactory = { PageSource(remoteDataSourceCharacters, localDataSource) }
+            ).flow
+        } else {
+            Log.d("online - else", isOnline.toString())
+            Pager(
+                config = PagingConfig(pageSize = 10),
+                pagingSourceFactory = { PageSourceLocalCharacters( localDataSource) }
+            ).flow
+        }
     }
 
-
-    override fun saveData(appState: AppState) {
+    override suspend fun saveData(appState: AppState) {
         TODO("Not yet implemented")
-
     }
+
 
     override suspend fun getCharacterDetails(id: Int): CharactersData {
-        return remoteDataSourceCharacters.getDataById(id).toCharactersData()
+        val result: CharacterDataDTO = remoteDataSourceCharacters.getDataById(id)
+        return result.toCharactersData()
+
     }
 
     override suspend fun getEpisodeById(id: Int): EpisodeData {
         return remoteDataSourceEpisode.getDataById(id).toEpisodeData()
     }
 
-    override fun getAllEpisode(): Flow<PagingData<EpisodeData>> {
-        return Pager(
-            config = PagingConfig(pageSize = 10),
-            pagingSourceFactory = { PageSourceEpisodes(remoteDataSourceEpisode) }
-        ).flow
+    override fun getAllEpisode(isOnline: Boolean): Flow<PagingData<EpisodeData>> {
+
+        return if (isOnline) {
+            Pager(
+                config = PagingConfig(pageSize = 10),
+                pagingSourceFactory = { PageSourceEpisodes(remoteDataSourceEpisode,localDataSource) }
+            ).flow
+        } else{
+            Pager(
+                config = PagingConfig(pageSize = 10),
+                pagingSourceFactory = { PageSourceLocalEpisodes(localDataSource) }
+            ).flow
+        }
+
     }
 
-    override fun getAllLocations(): Flow<PagingData<LocationData>> {
-        return Pager(
-            config = PagingConfig(pageSize = 10),
-            pagingSourceFactory = { PageSourceLocation(remoteDataSourceLocations) }
-        ).flow
+    override fun getAllLocations(isOnline: Boolean): Flow<PagingData<LocationData>> {
+
+        return if (isOnline) {
+            Pager(
+                config = PagingConfig(pageSize = 10),
+                pagingSourceFactory = { PageSourceLocation(remoteDataSourceLocations, localDataSource) }
+            ).flow
+        } else{
+            Pager(
+                config = PagingConfig(pageSize = 10),
+                pagingSourceFactory = { PageSourceLocalLocations(localDataSource) }
+            ).flow
+        }
     }
 
     override suspend fun getLocationById(id: Int): LocationData {
