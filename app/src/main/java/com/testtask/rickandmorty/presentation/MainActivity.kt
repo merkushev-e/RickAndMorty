@@ -1,6 +1,8 @@
 package com.testtask.rickandmorty.presentation
 
+import android.app.ActionBar
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import com.testtask.rickandmorty.App
@@ -20,8 +22,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         App.instance.component.inject(this)
-
-
+        val actionBar: ActionBar? = actionBar
+        actionBar?.setDisplayHomeAsUpEnabled(true)
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -30,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         }
         initBottomNavigationView()
     }
+
 
     private fun initBottomNavigationView() {
         binding.bottomNavigationView.selectedItemId = R.id.characters
@@ -43,14 +46,16 @@ class MainActivity : AppCompatActivity() {
                         .beginTransaction()
                         .replace(R.id.container, CharactersFragment.newInstance(), CHARACTERS_FRAGMENTS)
                         .commit()
-                    supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                    for (i in 0 until supportFragmentManager.backStackEntryCount) {
+                        supportFragmentManager.popBackStack()
+                    }
                     true
                 }
                 R.id.episodes  ->{
                     supportFragmentManager
                         .beginTransaction()
                         .replace(R.id.container, EpisodesFragment.newInstance())
-                        .addToBackStack(null)
+                        .addToBackStack("")
                         .commit()
                     true
                 }
@@ -59,7 +64,7 @@ class MainActivity : AppCompatActivity() {
                     supportFragmentManager
                         .beginTransaction()
                         .replace(R.id.container, LocationsFragment.newInstance())
-                        .addToBackStack(null)
+                        .addToBackStack("")
                         .commit()
                     true
                 }
@@ -68,20 +73,31 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     override fun onBackPressed() {
 
         val currentFragment = supportFragmentManager.findFragmentByTag(CHARACTERS_FRAGMENTS)
+        val subDetailsFragment = supportFragmentManager.findFragmentByTag(SUB_DETAILS_FRAGMENTS)
+        val detailsFragment = supportFragmentManager.findFragmentByTag(DETAILS_FRAGMENTS)
 
         if (currentFragment != null && currentFragment.isVisible) {
             supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
             super.onBackPressed()
-        }else{
+        }else if (detailsFragment !=null && detailsFragment.isVisible){
+            super.onBackPressed()
+        } else if(subDetailsFragment != null && subDetailsFragment.isVisible){
+            super.onBackPressed()
+        } else{
             binding.bottomNavigationView.selectedItemId = R.id.characters
             supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
         }
+
+
     }
 
     companion object{
+        const val SUB_DETAILS_FRAGMENTS = "SubDetails"
+        const val DETAILS_FRAGMENTS = "Details"
         private const val CHARACTERS_FRAGMENTS = "Characters"
     }
 }

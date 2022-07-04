@@ -1,5 +1,8 @@
 package com.testtask.rickandmorty.presentation.locations.view
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.util.Log
@@ -8,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
@@ -17,11 +21,9 @@ import com.testtask.rickandmorty.App
 import com.testtask.rickandmorty.R
 import com.testtask.rickandmorty.databinding.FragmentLocationsBinding
 import com.testtask.rickandmorty.domain.AppState
-import com.testtask.rickandmorty.domain.model.EpisodeData
 import com.testtask.rickandmorty.domain.model.LocationData
+import com.testtask.rickandmorty.presentation.MainActivity
 import com.testtask.rickandmorty.presentation.character.adapter.CharactersLoadStateAdapter
-import com.testtask.rickandmorty.presentation.episodes.adapter.EpisodesAdapter
-import com.testtask.rickandmorty.presentation.episodes.view.EpisodeDetailFragment
 import com.testtask.rickandmorty.presentation.locations.adapter.LocationsAdapter
 import com.testtask.rickandmorty.presentation.locations.viewmodels.LocationsViewModel
 import com.testtask.rickandmorty.utils.OnlineLiveData
@@ -44,6 +46,7 @@ class LocationsFragment : Fragment() {
     private lateinit var viewModel: LocationsViewModel
     private lateinit var charactersLoadStateHolder: CharactersLoadStateAdapter.ViewHolder
     private lateinit var onlineLiveData: OnlineLiveData
+    private var isOnline: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,30 +59,28 @@ class LocationsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding =  FragmentLocationsBinding.inflate(inflater, container, false)
-        return binding.root    }
-
+        (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity?)!!.supportActionBar?.setHomeButtonEnabled(false)
+        setHasOptionsMenu(false);
+        _binding = FragmentLocationsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        onlineLiveData = OnlineLiveData(requireActivity())
-        Log.d("online", "from livedata")
-        startLoadingOrShowError(false)
-        setupSwipeToRefresh(false)
-        onlineLiveData.observe(viewLifecycleOwner) {
-            Log.d("online", "from livedata" + it.toString())
-            startLoadingOrShowError(it)
-            setupSwipeToRefresh(it)
-            if (!it) {
-                Toast.makeText(
-                    requireContext(),
-                    getString(R.string.saved_data_showed),
-                    Toast.LENGTH_LONG
-                )
-                    .show()
-            }
+
+
+        isOnline = isNetworkAvailable()
+        if (isOnline) {
+            getData(true)
+        } else {
+            getData(false)
         }
+
+        setupSwipeToRefresh()
+        initNetworkObserver()
+
 
         initAdapter()
         observeLoadState(adapter)
@@ -88,7 +89,16 @@ class LocationsFragment : Fragment() {
 
     private fun initAdapter() {
 
-        val tryAgainAction = { adapter.retry() }
+        val tryAgainAction = {
+            isOnline = isNetworkAvailable()
+            if (isOnline) {
+                getData(true)
+            } else {
+                getData(false)
+            }
+            adapter.refresh()
+        }
+
         val footerAdapter = CharactersLoadStateAdapter(tryAgainAction)
         val adapterLoadState = adapter.withLoadStateFooter(footerAdapter)
         charactersLoadStateHolder = CharactersLoadStateAdapter.ViewHolder(
@@ -102,9 +112,11 @@ class LocationsFragment : Fragment() {
             locationRv.layoutManager = GridLayoutManager(requireContext(), 2)
             adapter.listener = LocationsAdapter.OnListItemClickListener {
                 requireActivity().supportFragmentManager.beginTransaction()
+
                     .replace(R.id.container, LocationDetailsFragment.newInstance(Bundle().apply {
                         putParcelable(LocationDetailsFragment.Location_EXTRA, it)
-                    }))
+                    }), MainActivity.DETAILS_FRAGMENTS)
+                    .addToBackStack("")
                     .commit()
             }
         }
@@ -119,6 +131,38 @@ class LocationsFragment : Fragment() {
         }
     }
 
+
+    private fun initNetworkObserver() {
+        onlineLiveData = OnlineLiveData(requireActivity())
+        onlineLiveData.observe(viewLifecycleOwner) { isOnline ->
+            if (isOnline) {
+                getData(isOnline)
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.saved_data_showed),
+                    Toast.LENGTH_LONG
+                )
+                    .show()
+                getData(isOnline)
+            }
+        }
+    }
+
+    private fun setupSwipeToRefresh() {
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            isOnline = isNetworkAvailable()
+            if (!isOnline) {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.saved_data_showed),
+                    Toast.LENGTH_LONG
+                )
+                    .show()
+            }
+            getData(isOnline)
+        }
+    }
 
 
     private fun observeLoadState(adapter: LocationsAdapter) {
@@ -164,11 +208,11 @@ class LocationsFragment : Fragment() {
 
 
     private fun startLoadingOrShowError(isOnline: Boolean) {
-            getData(isOnline)
+        getData(isOnline)
     }
 
     private fun showErrorScreen(message: String?) {
-        Toast.makeText(requireActivity(),message, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireActivity(), message, Toast.LENGTH_SHORT).show()
     }
 
 
@@ -193,6 +237,14 @@ class LocationsFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+
+    private fun isNetworkAvailable(): Boolean {
+        val cm =
+            requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val capabilities = cm.getNetworkCapabilities(cm.activeNetwork)
+        return (capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET))
     }
 
     companion object {

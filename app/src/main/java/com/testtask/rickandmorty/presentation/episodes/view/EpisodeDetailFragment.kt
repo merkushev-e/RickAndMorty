@@ -4,8 +4,11 @@ import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +21,7 @@ import com.testtask.rickandmorty.databinding.FragmentEpisodeDetailBinding
 import com.testtask.rickandmorty.domain.AppState
 import com.testtask.rickandmorty.domain.model.CharactersData
 import com.testtask.rickandmorty.domain.model.EpisodeData
+import com.testtask.rickandmorty.presentation.MainActivity.Companion.SUB_DETAILS_FRAGMENTS
 import com.testtask.rickandmorty.presentation.character.adapter.CharactersDetailsAdapter
 import com.testtask.rickandmorty.presentation.character.view.CharacterDetailsFragment
 import com.testtask.rickandmorty.presentation.character.viewModel.CharacterDetailsViewModel
@@ -48,6 +52,9 @@ class EpisodeDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity?)!!.supportActionBar?.setHomeButtonEnabled(true)
+        setHasOptionsMenu(true);
         _binding = FragmentEpisodeDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -65,6 +72,14 @@ class EpisodeDetailFragment : Fragment() {
         initAdapter()
         getData()
         initTryAgainButton()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            requireActivity().onBackPressed()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun showInfo(episodeData: EpisodeData) {
@@ -100,8 +115,9 @@ class EpisodeDetailFragment : Fragment() {
                             CharacterDetailsFragment.CHARACTER_EXTRA,
                             data
                         )
-                    })
-                )
+                    }),
+                    SUB_DETAILS_FRAGMENTS
+                ).addToBackStack("")
                 .commit()
         }
     }

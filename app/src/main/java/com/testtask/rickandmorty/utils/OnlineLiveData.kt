@@ -41,6 +41,6 @@ class OnlineLiveData(context: Context) : LiveData<Boolean>() {
     }
 
     private fun update(online: Boolean) {
-          postValue(online)
+        postValue(online)
     }
 }
