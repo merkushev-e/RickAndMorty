@@ -17,6 +17,7 @@ import com.testtask.rickandmorty.databinding.FragmentCharacterDetailsBinding
 import com.testtask.rickandmorty.databinding.FragmentEpisodeDetailBinding
 import com.testtask.rickandmorty.domain.AppState
 import com.testtask.rickandmorty.domain.model.CharactersData
+import com.testtask.rickandmorty.presentation.MainActivity.Companion.SUB_DETAILS_FRAGMENTS
 import com.testtask.rickandmorty.presentation.character.adapter.CharactersDetailsAdapter
 import com.testtask.rickandmorty.presentation.character.viewModel.CharacterDetailsViewModel
 import com.testtask.rickandmorty.presentation.episodes.view.EpisodeDetailFragment
@@ -92,7 +93,9 @@ class CharacterDetailsFragment : Fragment() {
                         EpisodeDetailFragment.EPISODE_EXTRA,
                         data
                     )
-                }))
+                }),
+                    SUB_DETAILS_FRAGMENTS)
+                .addToBackStack("")
                 .commit()
         }
     }
@@ -140,8 +143,10 @@ class CharacterDetailsFragment : Fragment() {
                 requireActivity().supportFragmentManager.beginTransaction()
                     .replace(R.id.container, LocationDetailsFragment.newInstance(Bundle().apply {
                         putParcelable(LocationDetailsFragment.Location_EXTRA, appState.data)
-                    }))
+                    }),SUB_DETAILS_FRAGMENTS)
+                    .addToBackStack("")
                     .commit()
+                requireActivity().supportFragmentManager.executePendingTransactions()
             }
             is AppState.Loading -> {
                 stopRefreshAnimationIfNeeded()

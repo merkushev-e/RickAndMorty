@@ -12,6 +12,7 @@ import com.testtask.rickandmorty.R
 import com.testtask.rickandmorty.databinding.FragmentLocationsDetailsBinding
 import com.testtask.rickandmorty.domain.AppState
 import com.testtask.rickandmorty.domain.model.LocationData
+import com.testtask.rickandmorty.presentation.MainActivity.Companion.SUB_DETAILS_FRAGMENTS
 import com.testtask.rickandmorty.presentation.character.view.CharacterDetailsFragment
 import com.testtask.rickandmorty.presentation.episodes.viewmodel.EpisodeDetailViewModel
 import com.testtask.rickandmorty.presentation.locations.adapter.LocationDetailsAdapter
@@ -96,8 +97,10 @@ class LocationDetailsFragment : Fragment() {
                             CharacterDetailsFragment.CHARACTER_EXTRA,
                             data
                         )
-                    })
+                    }),
+                    SUB_DETAILS_FRAGMENTS
                 )
+                .addToBackStack("")
                 .commit()
         }
     }

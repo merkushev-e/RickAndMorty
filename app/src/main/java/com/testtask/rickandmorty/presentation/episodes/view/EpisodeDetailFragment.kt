@@ -18,6 +18,7 @@ import com.testtask.rickandmorty.databinding.FragmentEpisodeDetailBinding
 import com.testtask.rickandmorty.domain.AppState
 import com.testtask.rickandmorty.domain.model.CharactersData
 import com.testtask.rickandmorty.domain.model.EpisodeData
+import com.testtask.rickandmorty.presentation.MainActivity.Companion.SUB_DETAILS_FRAGMENTS
 import com.testtask.rickandmorty.presentation.character.adapter.CharactersDetailsAdapter
 import com.testtask.rickandmorty.presentation.character.view.CharacterDetailsFragment
 import com.testtask.rickandmorty.presentation.character.viewModel.CharacterDetailsViewModel
@@ -100,8 +101,9 @@ class EpisodeDetailFragment : Fragment() {
                             CharacterDetailsFragment.CHARACTER_EXTRA,
                             data
                         )
-                    })
-                )
+                    }),
+                    SUB_DETAILS_FRAGMENTS
+                ).addToBackStack("")
                 .commit()
         }
     }
