@@ -1,6 +1,8 @@
 package com.testtask.rickandmorty.presentation
 
+import android.app.ActionBar
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentManager
 import com.testtask.rickandmorty.App
@@ -20,8 +22,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         App.instance.component.inject(this)
-
-
+        val actionBar: ActionBar? = actionBar
+        actionBar?.setDisplayHomeAsUpEnabled(true)
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
@@ -30,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         }
         initBottomNavigationView()
     }
+
 
     private fun initBottomNavigationView() {
         binding.bottomNavigationView.selectedItemId = R.id.characters
@@ -69,6 +72,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 
     override fun onBackPressed() {
 

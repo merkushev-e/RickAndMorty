@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -56,7 +57,9 @@ class CharactersFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-
+        (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity?)!!.supportActionBar?.setHomeButtonEnabled(false)
+        setHasOptionsMenu(false);
         _binding = FragmentCharactersBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -65,9 +68,9 @@ class CharactersFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         isOnline = isNetworkAvailable()
-        if (isOnline){
+        if (isOnline) {
             getData(true)
-        } else{
+        } else {
             getData(false)
         }
 
@@ -102,9 +105,9 @@ class CharactersFragment : Fragment() {
 
         val tryAgainAction = {
             isOnline = isNetworkAvailable()
-            if (isOnline){
+            if (isOnline) {
                 getData(true)
-            } else{
+            } else {
                 getData(false)
             }
             adapter.refresh()
@@ -204,7 +207,7 @@ class CharactersFragment : Fragment() {
     private fun setupSwipeToRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
             isOnline = isNetworkAvailable()
-            if (!isOnline){
+            if (!isOnline) {
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.saved_data_showed),
@@ -228,9 +231,9 @@ class CharactersFragment : Fragment() {
             CharactersFragment()
     }
 
-    private fun isNetworkAvailable() : Boolean{
+    private fun isNetworkAvailable(): Boolean {
         val cm = requireActivity().getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         val capabilities = cm.getNetworkCapabilities(cm.activeNetwork)
-        return(capabilities !=null && capabilities.hasCapability(NET_CAPABILITY_INTERNET))
+        return (capabilities != null && capabilities.hasCapability(NET_CAPABILITY_INTERNET))
     }
 }

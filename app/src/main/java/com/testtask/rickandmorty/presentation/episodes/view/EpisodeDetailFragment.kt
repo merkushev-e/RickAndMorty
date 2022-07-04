@@ -4,8 +4,11 @@ import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -49,6 +52,9 @@ class EpisodeDetailFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity?)!!.supportActionBar?.setHomeButtonEnabled(true)
+        setHasOptionsMenu(true);
         _binding = FragmentEpisodeDetailBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -66,6 +72,14 @@ class EpisodeDetailFragment : Fragment() {
         initAdapter()
         getData()
         initTryAgainButton()
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == android.R.id.home) {
+            requireActivity().onBackPressed()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     private fun showInfo(episodeData: EpisodeData) {

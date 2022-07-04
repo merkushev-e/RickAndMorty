@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
@@ -55,7 +56,9 @@ class EpisodesFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
+        (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity?)!!.supportActionBar?.setHomeButtonEnabled(false)
+        setHasOptionsMenu(false);
         _binding = FragmentEpisodesBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -66,9 +69,9 @@ class EpisodesFragment : Fragment() {
 
 
         isOnline = isNetworkAvailable()
-        if (isOnline){
+        if (isOnline) {
             getData(true)
-        } else{
+        } else {
             getData(false)
         }
 
@@ -85,9 +88,9 @@ class EpisodesFragment : Fragment() {
 
         val tryAgainAction = {
             isOnline = isNetworkAvailable()
-            if (isOnline){
+            if (isOnline) {
                 getData(true)
-            } else{
+            } else {
                 getData(false)
             }
             adapter.refresh()
@@ -186,7 +189,7 @@ class EpisodesFragment : Fragment() {
     private fun setupSwipeToRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
             isOnline = isNetworkAvailable()
-            if (!isOnline){
+            if (!isOnline) {
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.saved_data_showed),
@@ -199,7 +202,7 @@ class EpisodesFragment : Fragment() {
     }
 
     private fun startLoadingOrShowError(isOnline: Boolean) {
-            getData(isOnline)
+        getData(isOnline)
     }
 
 
@@ -214,10 +217,10 @@ class EpisodesFragment : Fragment() {
         }
 
     }
+
     private fun showLoading() {
         binding.loadStateView.progressBar.visibility = View.VISIBLE
     }
-
 
 
     override fun onDestroyView() {
@@ -226,10 +229,11 @@ class EpisodesFragment : Fragment() {
     }
 
 
-    private fun isNetworkAvailable() : Boolean{
-        val cm = requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private fun isNetworkAvailable(): Boolean {
+        val cm =
+            requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val capabilities = cm.getNetworkCapabilities(cm.activeNetwork)
-        return(capabilities !=null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET))
+        return (capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET))
     }
 
     companion object {

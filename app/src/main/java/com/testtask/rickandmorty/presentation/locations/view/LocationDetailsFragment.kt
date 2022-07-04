@@ -3,8 +3,11 @@ package com.testtask.rickandmorty.presentation.locations.view
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.testtask.rickandmorty.App
@@ -43,6 +46,9 @@ class LocationDetailsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity?)!!.supportActionBar?.setHomeButtonEnabled(true)
+        setHasOptionsMenu(true);
         _binding = FragmentLocationsDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -64,10 +70,19 @@ class LocationDetailsFragment : Fragment() {
     }
 
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        if (item.itemId == android.R.id.home) {
+            requireActivity().onBackPressed()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     private fun showInfo(location: LocationData) {
 
         with(binding) {
-            locationName.text  = location.name
+            locationName.text = location.name
             locationDimension.text = location.dimension
             locationType.text = location.type
         }
@@ -163,8 +178,6 @@ class LocationDetailsFragment : Fragment() {
             binding.swipeRefreshLayout.isRefreshing = false
         }
     }
-
-
 
 
     companion object {

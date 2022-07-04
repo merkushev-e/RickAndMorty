@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isInvisible
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
@@ -58,10 +59,12 @@ class LocationsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        _binding =  FragmentLocationsBinding.inflate(inflater, container, false)
-        return binding.root    }
-
+        (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(false)
+        (activity as AppCompatActivity?)!!.supportActionBar?.setHomeButtonEnabled(false)
+        setHasOptionsMenu(false);
+        _binding = FragmentLocationsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -69,9 +72,9 @@ class LocationsFragment : Fragment() {
 
 
         isOnline = isNetworkAvailable()
-        if (isOnline){
+        if (isOnline) {
             getData(true)
-        } else{
+        } else {
             getData(false)
         }
 
@@ -88,9 +91,9 @@ class LocationsFragment : Fragment() {
 
         val tryAgainAction = {
             isOnline = isNetworkAvailable()
-            if (isOnline){
+            if (isOnline) {
                 getData(true)
-            } else{
+            } else {
                 getData(false)
             }
             adapter.refresh()
@@ -149,7 +152,7 @@ class LocationsFragment : Fragment() {
     private fun setupSwipeToRefresh() {
         binding.swipeRefreshLayout.setOnRefreshListener {
             isOnline = isNetworkAvailable()
-            if (!isOnline){
+            if (!isOnline) {
                 Toast.makeText(
                     requireContext(),
                     getString(R.string.saved_data_showed),
@@ -205,11 +208,11 @@ class LocationsFragment : Fragment() {
 
 
     private fun startLoadingOrShowError(isOnline: Boolean) {
-            getData(isOnline)
+        getData(isOnline)
     }
 
     private fun showErrorScreen(message: String?) {
-        Toast.makeText(requireActivity(),message, Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireActivity(), message, Toast.LENGTH_SHORT).show()
     }
 
 
@@ -237,10 +240,11 @@ class LocationsFragment : Fragment() {
     }
 
 
-    private fun isNetworkAvailable() : Boolean{
-        val cm = requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private fun isNetworkAvailable(): Boolean {
+        val cm =
+            requireActivity().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         val capabilities = cm.getNetworkCapabilities(cm.activeNetwork)
-        return(capabilities !=null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET))
+        return (capabilities != null && capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET))
     }
 
     companion object {

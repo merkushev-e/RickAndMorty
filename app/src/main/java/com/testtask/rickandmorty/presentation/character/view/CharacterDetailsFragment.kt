@@ -1,12 +1,12 @@
 package com.testtask.rickandmorty.presentation.character.view
 
-import androidx.lifecycle.ViewModelProvider
+
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
@@ -14,7 +14,6 @@ import coil.transform.CircleCropTransformation
 import com.testtask.rickandmorty.App
 import com.testtask.rickandmorty.R
 import com.testtask.rickandmorty.databinding.FragmentCharacterDetailsBinding
-import com.testtask.rickandmorty.databinding.FragmentEpisodeDetailBinding
 import com.testtask.rickandmorty.domain.AppState
 import com.testtask.rickandmorty.domain.model.CharactersData
 import com.testtask.rickandmorty.presentation.MainActivity.Companion.SUB_DETAILS_FRAGMENTS
@@ -22,8 +21,7 @@ import com.testtask.rickandmorty.presentation.character.adapter.CharactersDetail
 import com.testtask.rickandmorty.presentation.character.viewModel.CharacterDetailsViewModel
 import com.testtask.rickandmorty.presentation.episodes.view.EpisodeDetailFragment
 import com.testtask.rickandmorty.presentation.locations.view.LocationDetailsFragment
-import com.testtask.rickandmorty.presentation.locations.viewmodels.LocationsDetailViewModel
-import java.lang.Error
+
 
 class CharacterDetailsFragment : Fragment() {
 
@@ -49,9 +47,13 @@ class CharacterDetailsFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        (activity as AppCompatActivity?)!!.supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity?)!!.supportActionBar?.setHomeButtonEnabled(true)
+        setHasOptionsMenu(true);
         _binding = FragmentCharacterDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -72,6 +74,15 @@ class CharacterDetailsFragment : Fragment() {
 
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        if (item.itemId == android.R.id.home) {
+            requireActivity().onBackPressed()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
     private fun initTryAgainButton() {
         binding.loadStateView.tryAgainButton.setOnClickListener {
             stopRefreshAnimationIfNeeded()
@@ -88,13 +99,15 @@ class CharacterDetailsFragment : Fragment() {
         adapter.listener = CharactersDetailsAdapter.OnListItemClickListener { data ->
             requireActivity().supportFragmentManager
                 .beginTransaction()
-                .replace(R.id.container, EpisodeDetailFragment.newInstance(Bundle().apply {
-                    putParcelable(
-                        EpisodeDetailFragment.EPISODE_EXTRA,
-                        data
-                    )
-                }),
-                    SUB_DETAILS_FRAGMENTS)
+                .replace(
+                    R.id.container, EpisodeDetailFragment.newInstance(Bundle().apply {
+                        putParcelable(
+                            EpisodeDetailFragment.EPISODE_EXTRA,
+                            data
+                        )
+                    }),
+                    SUB_DETAILS_FRAGMENTS
+                )
                 .addToBackStack("")
                 .commit()
         }
@@ -143,7 +156,7 @@ class CharacterDetailsFragment : Fragment() {
                 requireActivity().supportFragmentManager.beginTransaction()
                     .replace(R.id.container, LocationDetailsFragment.newInstance(Bundle().apply {
                         putParcelable(LocationDetailsFragment.Location_EXTRA, appState.data)
-                    }),SUB_DETAILS_FRAGMENTS)
+                    }), SUB_DETAILS_FRAGMENTS)
                     .addToBackStack("")
                     .commit()
                 requireActivity().supportFragmentManager.executePendingTransactions()
