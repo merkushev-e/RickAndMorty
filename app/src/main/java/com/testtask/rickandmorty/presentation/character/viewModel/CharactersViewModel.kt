@@ -1,5 +1,6 @@
 package com.testtask.rickandmorty.presentation.character.viewModel
 
+import android.util.Log
 import androidx.lifecycle.*
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
@@ -22,18 +23,9 @@ class CharactersViewModel @Inject constructor(
     var liveData: LiveData<AppState> = liveDataToObserve
 
     private val coroutineExceptionHandler =
-        CoroutineExceptionHandler { coroutineContext, throwable ->
+        CoroutineExceptionHandler { _, throwable ->
             handleError(throwable)
         }
-
-
-    init {
-
-
-//        liveData = getListData().cachedIn(viewModelScope).map { AppState.Success(it) }.asLiveData(viewModelScope.coroutineContext)
-
-//        getData(false)
-    }
 
 
     fun getData(
@@ -44,9 +36,10 @@ class CharactersViewModel @Inject constructor(
     ) {
         liveDataToObserve.value = AppState.Loading(null)
         viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            getListData(isOnline,state,genderState,searchText).cachedIn(viewModelScope).collectLatest {
-                liveDataToObserve.postValue(AppState.Success(it))
-            }
+            getListData(isOnline, state, genderState, searchText).cachedIn(viewModelScope)
+                .collectLatest {
+                    liveDataToObserve.postValue(AppState.Success(it))
+                }
         }
 
 
@@ -58,6 +51,7 @@ class CharactersViewModel @Inject constructor(
         genderState: GenderState,
         searchText: String
     ): Flow<PagingData<CharactersData>> {
+        Log.d("TAG", "getList")
         return repository.getCharactersByPage(
             isOnline,
             state,

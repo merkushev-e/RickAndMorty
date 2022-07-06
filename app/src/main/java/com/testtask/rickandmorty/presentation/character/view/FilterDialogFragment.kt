@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.testtask.rickandmorty.App
 import com.testtask.rickandmorty.databinding.FilterDialogFragmentBinding
+import com.testtask.rickandmorty.presentation.character.view.CharactersFragment.Companion.INITIAL_VALUE
 import com.testtask.rickandmorty.presentation.character.viewModel.CharactersViewModel
 import com.testtask.rickandmorty.presentation.character.viewModel.states.GenderState
 import com.testtask.rickandmorty.presentation.character.viewModel.states.StatusState
@@ -86,7 +87,7 @@ class FilterDialogFragment() : BottomSheetDialogFragment() {
         binding.buttonClear.setOnClickListener {
             binding.rgGender.clearCheck()
             binding.rgStatus.clearCheck()
-            binding.characterName.setText("")
+            binding.characterName.setText(INITIAL_VALUE)
         }
 
         binding.buttonApply.setOnClickListener {
@@ -111,6 +112,7 @@ class FilterDialogFragment() : BottomSheetDialogFragment() {
         fun interface OnSearchClickListener {
         fun onClick(statusState: StatusState, genderState: GenderState, textQuery: String)
     }
+
 
 
 }

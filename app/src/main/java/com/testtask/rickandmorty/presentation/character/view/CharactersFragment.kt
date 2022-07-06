@@ -5,6 +5,7 @@ import android.content.Context.CONNECTIVITY_SERVICE
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.os.Bundle
+import android.util.Log
 
 import android.view.LayoutInflater
 import android.view.View
@@ -151,6 +152,14 @@ class CharactersFragment : Fragment() {
             }
         }
 
+
+//        adapter.addLoadStateListener {
+//            Log.d("TAG","Listener")
+//            if (it.source.refresh is LoadState.NotLoading && it.append.endOfPaginationReached && adapter.itemCount < 1) {
+//                Toast.makeText(requireActivity(), "Nothing found", Toast.LENGTH_SHORT).show()
+//            }
+//        }
+
     }
 
 
@@ -159,14 +168,19 @@ class CharactersFragment : Fragment() {
         viewModel.liveData.observe(viewLifecycleOwner) { appState ->
             renderData(appState)
         }
-        viewModel.getData(isOnline,StatusState.NONE,GenderState.NONE,"")
+        viewModel.getData(isOnline, StatusState.NONE, GenderState.NONE, "")
     }
 
 
     private fun observeLoadState(adapter: CharactersAdapter) {
+
         viewLifecycleOwner.lifecycleScope.launch {
             adapter.loadStateFlow.debounce(200).collectLatest { state ->
                 charactersLoadStateHolder.bind(state.refresh)
+                Log.d("TAG", "Listener")
+                if (state.source.refresh is LoadState.NotLoading && state.append.endOfPaginationReached && adapter.itemCount == 0) {
+                    Toast.makeText(requireActivity(), "Nothing found", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -180,9 +194,7 @@ class CharactersFragment : Fragment() {
                             || previous is LoadState.Error
                             || (beforePrevious is LoadState.Error && previous is LoadState.NotLoading
                             && current is LoadState.Loading)
-
             }
-
     }
 
     private fun getRefreshLoadStateFlow(adapter: CharactersAdapter): Flow<LoadState> {
@@ -213,9 +225,9 @@ class CharactersFragment : Fragment() {
 
     private fun showViewSuccess(appState: AppState.Success<PagingData<CharactersData>>) {
 
+
         viewLifecycleOwner.lifecycleScope.launch {
             appState.data?.let { adapter.submitData(it) }
-
         }
     }
 
@@ -246,9 +258,11 @@ class CharactersFragment : Fragment() {
 
 
     companion object {
-
+        const val INITIAL_VALUE = ""
         fun newInstance() =
             CharactersFragment()
+
+
     }
 
     private fun isNetworkAvailable(): Boolean {
