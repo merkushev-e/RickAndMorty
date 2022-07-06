@@ -19,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_RickAndMorty)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         App.instance.component.inject(this)
