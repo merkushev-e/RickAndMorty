@@ -12,4 +12,5 @@
     <color name="bg_color">#F2F2F7</color>
     <color name="gray_blue">#6C798F</color>
     <color name="stroke_color">#E5E5EA</color>
+    <color name="dark_blue">#073591</color>
 </resources>
