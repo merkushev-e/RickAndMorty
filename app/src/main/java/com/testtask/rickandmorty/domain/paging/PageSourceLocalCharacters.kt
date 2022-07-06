@@ -7,9 +7,16 @@ import com.testtask.rickandmorty.data.room.LocalDataSource
 import com.testtask.rickandmorty.data.room.episodes.EpisodeEntity
 import com.testtask.rickandmorty.data.room.location.LocationEntity
 import com.testtask.rickandmorty.domain.model.CharactersData
+import com.testtask.rickandmorty.presentation.character.viewModel.states.GenderState
+import com.testtask.rickandmorty.presentation.character.viewModel.states.StatusState
 import com.testtask.rickandmorty.utils.toCharactersData
 
-class PageSourceLocalCharacters(private val localDataSource: LocalDataSource<CharacterDataEntity, EpisodeEntity, LocationEntity>) :
+class PageSourceLocalCharacters(
+    private val localDataSource: LocalDataSource<CharacterDataEntity, EpisodeEntity, LocationEntity>,
+    private val status: StatusState,
+    private val gender: GenderState,
+    private val name: String
+) :
     PagingSource<Int, CharactersData>() {
     override fun getRefreshKey(state: PagingState<Int, CharactersData>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
@@ -25,9 +32,16 @@ class PageSourceLocalCharacters(private val localDataSource: LocalDataSource<Cha
             val pageSize = params.loadSize
             val offset = page * pageSize
 
-            val response = localDataSource.getDataByPages(limit = pageSize, offset = offset).map {
-                it.toCharactersData()
-            }
+            val response =
+                localDataSource.getDataByPages(
+                    limit = pageSize,
+                    offset = offset,
+                    status = status.title,
+                    gender = gender.title,
+                    searchBy = name,
+                    ).map {
+                        it.toCharactersData()
+                    }
             return LoadResult.Page(
                 data = response,
                 prevKey = if (page == 0) null else page - 1,

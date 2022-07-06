@@ -65,6 +65,7 @@ internal fun CharacterDataEntity.toCharactersData(): CharactersData {
         id = id,
         image = image,
         location = CharactersData.Location(locationName,locationUrl),
+        name = name,
         origin = CharactersData.Origin(origin,""),
         species = species,
         status = status,

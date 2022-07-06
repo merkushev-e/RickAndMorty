@@ -15,4 +15,13 @@ class RemoteDataSourceLocations(private val api: RMApi): DataSource<LocationsRes
        return api.getLocation(id)
     }
 
+    override suspend fun getDataByPagesWithFilters(
+        page: Int,
+        status: String,
+        gender: String,
+        name: String
+    ): LocationsResultDTO {
+        TODO("Not yet implemented")
+    }
+
 }

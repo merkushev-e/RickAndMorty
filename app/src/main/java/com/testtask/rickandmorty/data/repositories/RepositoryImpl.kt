@@ -16,6 +16,8 @@ import com.testtask.rickandmorty.domain.model.CharactersData
 import com.testtask.rickandmorty.domain.model.EpisodeData
 import com.testtask.rickandmorty.domain.model.LocationData
 import com.testtask.rickandmorty.domain.paging.*
+import com.testtask.rickandmorty.presentation.character.viewModel.states.GenderState
+import com.testtask.rickandmorty.presentation.character.viewModel.states.StatusState
 import com.testtask.rickandmorty.utils.toCharactersData
 import com.testtask.rickandmorty.utils.toEpisodeData
 import com.testtask.rickandmorty.utils.toLocationData
@@ -29,18 +31,21 @@ class RepositoryImpl
     private val remoteDataSourceLocations: DataSource<LocationsResultDTO, LocationDTO>,
     private val localDataSource: LocalDataSource<CharacterDataEntity, EpisodeEntity, LocationEntity>
 ) : Repository {
-    override fun getCharactersByPage(isOnline: Boolean): Flow<PagingData<CharactersData>> {
+    override fun getCharactersByPage(
+        isOnline: Boolean, status: StatusState,
+        gender: GenderState,
+        name: String
+    ): Flow<PagingData<CharactersData>> {
 
-        return if (isOnline){
+        return if (isOnline) {
             Pager(
                 config = PagingConfig(pageSize = 10),
-                pagingSourceFactory = { PageSource(remoteDataSourceCharacters, localDataSource) }
+                pagingSourceFactory = { PageSource(remoteDataSourceCharacters, localDataSource,status,gender,name) }
             ).flow
         } else {
-            Log.d("online - else", isOnline.toString())
             Pager(
                 config = PagingConfig(pageSize = 10),
-                pagingSourceFactory = { PageSourceLocalCharacters( localDataSource) }
+                pagingSourceFactory = { PageSourceLocalCharacters(localDataSource,status,gender,name) }
             ).flow
         }
     }
@@ -65,9 +70,14 @@ class RepositoryImpl
         return if (isOnline) {
             Pager(
                 config = PagingConfig(pageSize = 10),
-                pagingSourceFactory = { PageSourceEpisodes(remoteDataSourceEpisode,localDataSource) }
+                pagingSourceFactory = {
+                    PageSourceEpisodes(
+                        remoteDataSourceEpisode,
+                        localDataSource
+                    )
+                }
             ).flow
-        } else{
+        } else {
             Pager(
                 config = PagingConfig(pageSize = 10),
                 pagingSourceFactory = { PageSourceLocalEpisodes(localDataSource) }
@@ -81,9 +91,14 @@ class RepositoryImpl
         return if (isOnline) {
             Pager(
                 config = PagingConfig(pageSize = 10),
-                pagingSourceFactory = { PageSourceLocation(remoteDataSourceLocations, localDataSource) }
+                pagingSourceFactory = {
+                    PageSourceLocation(
+                        remoteDataSourceLocations,
+                        localDataSource
+                    )
+                }
             ).flow
-        } else{
+        } else {
             Pager(
                 config = PagingConfig(pageSize = 10),
                 pagingSourceFactory = { PageSourceLocalLocations(localDataSource) }

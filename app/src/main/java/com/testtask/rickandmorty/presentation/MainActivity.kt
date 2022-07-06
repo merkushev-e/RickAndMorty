@@ -98,6 +98,7 @@ class MainActivity : AppCompatActivity() {
     companion object{
         const val SUB_DETAILS_FRAGMENTS = "SubDetails"
         const val DETAILS_FRAGMENTS = "Details"
+        const val BOTTOM_SHEET_FRAGMENT_DIALOG_TAG = "Dialog"
         private const val CHARACTERS_FRAGMENTS = "Characters"
     }
 }

@@ -23,10 +23,13 @@ import com.testtask.rickandmorty.R
 import com.testtask.rickandmorty.databinding.FragmentCharactersBinding
 import com.testtask.rickandmorty.domain.AppState
 import com.testtask.rickandmorty.domain.model.CharactersData
+import com.testtask.rickandmorty.presentation.MainActivity.Companion.BOTTOM_SHEET_FRAGMENT_DIALOG_TAG
 import com.testtask.rickandmorty.presentation.MainActivity.Companion.DETAILS_FRAGMENTS
 import com.testtask.rickandmorty.presentation.character.adapter.CharactersAdapter
 import com.testtask.rickandmorty.presentation.character.adapter.CharactersLoadStateAdapter
 import com.testtask.rickandmorty.presentation.character.viewModel.CharactersViewModel
+import com.testtask.rickandmorty.presentation.character.viewModel.states.GenderState
+import com.testtask.rickandmorty.presentation.character.viewModel.states.StatusState
 import com.testtask.rickandmorty.utils.OnlineLiveData
 import com.testtask.rickandmorty.utils.simpleScan
 import kotlinx.coroutines.flow.*
@@ -76,11 +79,26 @@ class CharactersFragment : Fragment() {
 
         setupSwipeToRefresh()
         initNetworkObserver()
-
+        initFab()
         initAdapter()
         observeLoadState(adapter)
         handleListVisibility(adapter)
 
+    }
+
+    private fun initFab() {
+        binding.floatingActionButton.setOnClickListener {
+            val dialogFragment = FilterDialogFragment()
+
+            dialogFragment.setOnSearchClickListener() { statusState, genderState, textQuery ->
+                isOnline = isNetworkAvailable()
+                viewModel.getData(isOnline, statusState, genderState, textQuery)
+            }
+            dialogFragment.show(
+                parentFragmentManager,
+                BOTTOM_SHEET_FRAGMENT_DIALOG_TAG
+            )
+        }
     }
 
     private fun initNetworkObserver() {
@@ -137,10 +155,11 @@ class CharactersFragment : Fragment() {
 
 
     private fun getData(isOnline: Boolean) {
+
         viewModel.liveData.observe(viewLifecycleOwner) { appState ->
             renderData(appState)
         }
-        viewModel.getData(isOnline)
+        viewModel.getData(isOnline,StatusState.NONE,GenderState.NONE,"")
     }
 
 
@@ -227,6 +246,7 @@ class CharactersFragment : Fragment() {
 
 
     companion object {
+
         fun newInstance() =
             CharactersFragment()
     }

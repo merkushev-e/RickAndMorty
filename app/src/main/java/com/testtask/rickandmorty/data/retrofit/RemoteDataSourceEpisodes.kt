@@ -14,4 +14,13 @@ class RemoteDataSourceEpisodes(private val api: RMApi) :
     override suspend fun getDataById(id: Int): EpisodeDTO {
         return api.getEpisodeById(id)
     }
+
+    override suspend fun getDataByPagesWithFilters(
+        page: Int,
+        status: String,
+        gender: String,
+        name: String
+    ): EpisodesResultDTO {
+        TODO("Not yet implemented")
+    }
 }

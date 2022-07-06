@@ -13,6 +13,15 @@ interface RMApi {
         @Query("page") page: Int? = null
     ): CharactersResponseDTO
 
+    @GET("character")
+    suspend fun getAllCharactersWithFilters(
+        @Query("status") status: String="",
+        @Query("gender") gender: String="",
+        @Query("name") name: String="",
+        @Query("page") page: Int? = null
+    ): CharactersResponseDTO
+
+
     @GET("character/{id}")
     suspend fun getCharacter(@Path("id") id: Int): CharacterDataDTO
 

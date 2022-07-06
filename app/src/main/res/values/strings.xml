@@ -26,4 +26,15 @@
     <string name="saved_data_showed">Saved data has been shown, to update check your internet connection</string>
     <string name="error">Error</string>
     <string name="emptyData">Empty Data. Please connect to the Internet, and refresh page!</string>
+    <string name="character_name">Character Name</string>
+    <string name="alive">Alive</string>
+    <string name="dead">Dead</string>
+    <string name="status_fr">Status</string>
+    <string name="unknown">Unknown</string>
+    <string name="gender_fr">Gender</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="genderless">Genderless</string>
+    <string name="apply">Apply</string>
+    <string name="clear">Clear</string>
 </resources>
