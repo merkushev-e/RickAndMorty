@@ -20,8 +20,8 @@ interface DbDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAllLocations(entities: List<LocationEntity>)
 
-    @Query("SELECT * FROM CharacterDataEntity " + "LIMIT :limit OFFSET :offset")
-    suspend fun getData(limit: Int, offset: Int): List<CharacterDataEntity>
+    @Query("SELECT * FROM CharacterDataEntity WHERE name LIKE '%' || :search || '%' AND status LIKE '%' || :status || '%' AND gender LIKE  :gender || '%' LIMIT :limit OFFSET :offset")
+    suspend fun getData(limit: Int, offset: Int, status: String, gender: String, search: String): List<CharacterDataEntity>
 
     @Query("SELECT * FROM EpisodeEntity " + "LIMIT :limit OFFSET :offset")
     suspend fun getEpisodeData(limit: Int, offset: Int): List<EpisodeEntity>

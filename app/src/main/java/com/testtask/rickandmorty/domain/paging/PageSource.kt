@@ -11,13 +11,18 @@ import com.testtask.rickandmorty.data.room.LocalDataSource
 import com.testtask.rickandmorty.data.room.episodes.EpisodeEntity
 import com.testtask.rickandmorty.data.room.location.LocationEntity
 import com.testtask.rickandmorty.domain.model.CharactersData
+import com.testtask.rickandmorty.presentation.character.viewModel.states.GenderState
+import com.testtask.rickandmorty.presentation.character.viewModel.states.StatusState
 import com.testtask.rickandmorty.utils.toCharacterDataEntity
 import com.testtask.rickandmorty.utils.toCharactersData
 
 
 class PageSource(
     private val remoteDataSource: DataSource<CharactersResponseDTO, CharacterDataDTO>,
-    private val  localDataSource: LocalDataSource<CharacterDataEntity, EpisodeEntity, LocationEntity>
+    private val localDataSource: LocalDataSource<CharacterDataEntity, EpisodeEntity, LocationEntity>,
+    private val status: StatusState,
+    private val gender: GenderState,
+    private val name: String
 ) : PagingSource<Int, CharactersData>() {
     override fun getRefreshKey(state: PagingState<Int, CharactersData>): Int? {
         return state.anchorPosition?.let { anchorPosition ->
@@ -32,7 +37,11 @@ class PageSource(
         try {
             val page: Int = params.key ?: 1
 
-            val response = remoteDataSource.getDataByPages(page)
+            val response = remoteDataSource.getDataByPagesWithFilters(
+                page, status.title,
+                gender.title,
+                name
+            )
             var nextKey: Int? = null
             if (response.info.next != null) {
                 val uri = Uri.parse(response.info.next)
