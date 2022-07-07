@@ -47,6 +47,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.0'
+    implementation 'androidx.test.ext:junit-ktx:1.1.3'
     kapt 'com.google.dagger:dagger-compiler:2.24'
 
     //Pagination 3
@@ -78,7 +79,19 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.4.2'
     implementation 'com.google.android.material:material:1.4.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+
+
+
+    // AndroidX Test - JVM testing
+    testImplementation "androidx.test.ext:junit-ktx:1.1.3"
+    testImplementation "androidx.test:core-ktx:1.4.0"
+    testImplementation "androidx.arch.core:core-testing:2.1.0"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
+    testImplementation 'org.mockito:mockito-inline:2.8.9'
+    testImplementation "org.mockito:mockito-core:3.4.6"
+    testImplementation('com.nhaarman:mockito-kotlin:1.5.0') {
+        exclude group: 'org.jetbrains.kotlin'
+        exclude group: 'org.mockito'
+    }
+
 }
