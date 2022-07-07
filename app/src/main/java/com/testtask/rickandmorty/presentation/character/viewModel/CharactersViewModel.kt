@@ -9,6 +9,7 @@ import com.testtask.rickandmorty.domain.AppState
 import com.testtask.rickandmorty.domain.model.CharactersData
 import com.testtask.rickandmorty.presentation.character.viewModel.states.GenderState
 import com.testtask.rickandmorty.presentation.character.viewModel.states.StatusState
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -16,7 +17,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class CharactersViewModel @Inject constructor(
-    private val repository: RepositoryImpl
+    private val repository: RepositoryImpl,
+    private val defaultDispatcher: CoroutineDispatcher
 ) : ViewModel() {
 
     private var liveDataToObserve: MutableLiveData<AppState> = MutableLiveData()
@@ -35,11 +37,12 @@ class CharactersViewModel @Inject constructor(
         searchText: String
     ) {
         liveDataToObserve.value = AppState.Loading(null)
-        viewModelScope.launch(Dispatchers.IO + coroutineExceptionHandler) {
-            getListData(isOnline, state, genderState, searchText).cachedIn(viewModelScope)
-                .collectLatest {
-                    liveDataToObserve.postValue(AppState.Success(it))
-                }
+        viewModelScope.launch(defaultDispatcher + coroutineExceptionHandler) {
+            liveDataToObserve.postValue(AppState.Success(getListData(isOnline, state, genderState, searchText)))
+//            getListData(isOnline, state, genderState, searchText).cachedIn(viewModelScope)
+//                .collectLatest {
+//                    liveDataToObserve.postValue(AppState.Success(it))
+//                }
         }
 
 
@@ -51,7 +54,6 @@ class CharactersViewModel @Inject constructor(
         genderState: GenderState,
         searchText: String
     ): Flow<PagingData<CharactersData>> {
-        Log.d("TAG", "getList")
         return repository.getCharactersByPage(
             isOnline,
             state,

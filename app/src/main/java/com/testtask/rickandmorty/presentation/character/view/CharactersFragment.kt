@@ -204,7 +204,7 @@ class CharactersFragment : Fragment() {
     private fun renderData(appState: AppState) {
         when (appState) {
             is AppState.Success<*> -> {
-                showViewSuccess(appState as AppState.Success<PagingData<CharactersData>>)
+                showViewSuccess(appState as AppState.Success<Flow<PagingData<CharactersData>>>)
             }
             is AppState.Error -> {
                 showErrorScreen(appState.error.message)
@@ -223,12 +223,13 @@ class CharactersFragment : Fragment() {
         Toast.makeText(requireActivity(), message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun showViewSuccess(appState: AppState.Success<PagingData<CharactersData>>) {
-
+    private fun showViewSuccess(appState: AppState.Success< Flow<PagingData<CharactersData>>>) {
 
         viewLifecycleOwner.lifecycleScope.launch {
-            appState.data?.let { adapter.submitData(it) }
-        }
+            appState.data?.collectLatest {
+                adapter.submitData(it) }
+            }
+
     }
 
     private fun showLoading() {

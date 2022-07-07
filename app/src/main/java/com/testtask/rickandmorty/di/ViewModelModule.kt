@@ -12,6 +12,7 @@ import dagger.MapKey
 import dagger.Module
 import dagger.Provides
 import dagger.multibindings.IntoMap
+import kotlinx.coroutines.Dispatchers
 import kotlin.reflect.KClass
 
 @Module
@@ -20,7 +21,7 @@ class ViewModelModule {
     @ViewModelKey(CharactersViewModel::class)
     @Provides
     fun provideCharactersViewModel(repository: RepositoryImpl): ViewModel {
-        return CharactersViewModel(repository)
+        return CharactersViewModel(repository, Dispatchers.IO)
     }
 
     @IntoMap
