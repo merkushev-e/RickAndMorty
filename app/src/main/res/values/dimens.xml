@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="marginStartEnd">16dp</dimen>
+    <dimen name="marginStartTV">12dp</dimen>
+    <dimen name="textSizeDefault">16sp</dimen>
+    <dimen name="margin15">15dp</dimen>
+</resources>
